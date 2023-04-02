@@ -19,7 +19,9 @@ app.use(express.json());
 // Routes
 app.get('/api', (req, res) => res.send('Server running'));
 app.use('/api/users', require('./routes/users'));
-
+app.use('/api/accounts', require('./routes/accounts'));
+app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/inventories', require('./routes/inventories'));
 
 // Error handling middleware
 app.use(errorHandler);
