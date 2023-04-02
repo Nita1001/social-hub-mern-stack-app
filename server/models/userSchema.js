@@ -28,13 +28,13 @@ const userSchema = new mongoose.Schema({
     location: {
         type: String
     },
-    Inventory: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Inventory'
-    },
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Account'
+    },
+    inventoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Inventory'
     },
 })
 
