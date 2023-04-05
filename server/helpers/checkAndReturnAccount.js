@@ -11,11 +11,11 @@ const checkAndReturnAccount = async (accountId, userId) => {
         if (!account) {
             throw new Error('Account not found');
         }
-        return { account, status: 200, message: 'Account Exists' };
+        return account;
 
     } catch (error) {
         console.error(error);
-        return { status: 500, message: 'Something went wrong' };
+        throw new Error(error.message);
     }
 };
 
