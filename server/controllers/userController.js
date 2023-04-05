@@ -34,6 +34,10 @@ exports.createUser = async (req, res) => {
         return res.status(400).json({ message: 'Missing required fields' });
     }
     try {
+        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        if (userExists) {
+            return res.status(400).json({ message: 'User Already Exists' });
+        }
         const user = new User({
             firstName,
             lastName,
@@ -52,7 +56,7 @@ exports.createUser = async (req, res) => {
         // saving updated user
         await savedUser.save();
 
-        res.status(201).json(savedUser);
+        res.status(201).json({ message: 'User created successfully', savedUser });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -69,7 +73,7 @@ exports.updateUser = async (req, res) => {
             user[key] = req.body[key];
         });
         await user.save();
-        res.status(200).json(user);
+        res.status(200).json({ message: 'User updated successfully', user });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
