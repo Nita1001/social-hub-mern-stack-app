@@ -56,14 +56,11 @@ exports.updateCredit = async (req, res) => {
         if (!userId || !accountId || !amount) {
             return res.status(400).json({ message: 'Missing fields in request body' });
         }
-        const accountCheck = await checkAndReturnAccount(accountId);
-        if (accountCheck.status !== 200) {
-            return res.status(accountCheck.status).json({ message: accountCheck.message });
-        }
+        const account = await checkAndReturnAccount(accountId);
         const transaction = await createTransaction('credit', amount, accountId);
         const updatedAccount = await updateAccount(accountId, { $inc: { credit: amount }, $push: { transactions: transaction._id } });
 
-        res.json({ message: 'Credit updated successfully', account: updatedAccount });
+        res.json({ message: 'Credit updated successfully', account: updatedAccount, previousCredit: account.credit });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -79,10 +76,7 @@ exports.transferMoney = async (req, res) => {
         }
         const fromAccount = await checkAndReturnAccount(fromAccountId);
         //Checking for sufficient funds
-        console.log('fromAccount balance', fromAccount.balance);
-        console.log('fromAccount credit', fromAccount.credit);
         const totalBalance = fromAccount.balance + fromAccount.credit;
-        console.log('total Balance is:', totalBalance);
         if (totalBalance < amount) {
             return res.status(400).json({ message: 'Insufficient funds' });
         }
