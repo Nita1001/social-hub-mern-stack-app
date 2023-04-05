@@ -1,70 +1,55 @@
-const Transaction = require('../models/transactionSchema.js');
 const checkAndReturnAccount = require('../helpers/checkAndReturnAccount.js');
-const saveUpdatedAccount = require('../helpers/saveUpdatedAccount.js');
-const updateUserTransactions = require('../helpers/updateUserTransactions.js');
+const updateAccount = require('../helpers/updateAccount.js');
+const createTransaction = require('../helpers/createTransaction.js');
 const Account = require('../models/accountSchema.js');
 
-//Deposit cash to user's account
 exports.depositCash = async (req, res) => {
     try {
         const { userId, accountId, amount } = req.body;
+        const account = await checkAndReturnAccount(accountId, userId);
+        if (account.status !== 200) {
+            return res.status(account.status).json({ message: account.message });
+        }
 
+        const transaction = await createTransaction('deposit', amount, accountId);
+        const updatedAccount = await updateAccount(accountId, { $inc: { balance: amount }, $push: { transactions: transaction._id } });
+
+        res.json({
+            message: 'Cash deposited successfully',
+            account: updatedAccount,
+            previousBalance: account.account.balance
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}
+
+exports.withdrawMoney = async (req, res) => {
+    try {
+        const { userId, accountId, amount } = req.body;
         const response = await checkAndReturnAccount(accountId, userId);
-
         if (response.status !== 200) {
             return res.status(response.status).json({ message: response.message });
         }
 
-        const [updatedAccount, transaction] = await Promise.all([
-            saveUpdatedAccount(accountId, { $inc: { balance: amount } }),
-            new Transaction({ type: 'deposit', amount, accountId }).save()
-        ]);
-
-        await updateUserTransactions(userId, transaction._id);
-
-        if (!updatedAccount) {
-            return res.status(404).json({ message: 'Account not found' });
-        }
-
-        const previousBalance = response.account.balance;
-
-        res.json({ message: 'Cash deposited successfully', account: updatedAccount, previousBalance });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
-    }
-};
-
-
-//Withdraw money from user's account
-exports.withdrawMoney = async (req, res) => {
-    try {
-        const { userId, accountId, amount } = req.body;
-        const accountCheck = await checkAndReturnAccount(accountId, userId);
-        if (accountCheck.status !== 200) {
-            return res.status(accountCheck.status).json({ message: accountCheck.message });
-        }
-        const account = accountCheck.account;
+        const account = response.account;
 
         if (account.balance + account.credit < amount) {
             return res.status(400).json({ message: 'Insufficient funds' });
         }
-        const newBalance = account.balance - amount;
-        const updatedAccount = await saveUpdatedAccount(accountId, { balance: newBalance });
-        const transaction = new Transaction({
-            type: 'withdrawal',
-            amount,
-            accountId
-        });
-        await transaction.save();
-        await updateUserTransactions(userId, transaction._id);
-        res.json({ message: 'Cash withdrawn successfully', account: updatedAccount })
+
+        const transaction = await createTransaction('withdrawal', amount, accountId);
+        const updatedAccount = await updateAccount(accountId, { $inc: { balance: -amount }, $push: { transactions: transaction._id } });
+
+        res.json({ message: 'Cash withdrawn successfully', account: updatedAccount, previousBalance: response.account.balance });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
-};
+}
 
 //Update user's credit
 exports.updateCredit = async (req, res) => {
@@ -75,11 +60,9 @@ exports.updateCredit = async (req, res) => {
         if (accountCheck.status !== 200) {
             return res.status(accountCheck.status).json({ message: accountCheck.message });
         }
+        const transaction = await createTransaction('credit', amount, accountId);
+        const updatedAccount = await updateAccount(accountId, { $inc: { credit: amount }, $push: { transactions: transaction._id } });
 
-        const updatedAccount = await saveUpdatedAccount(accountId, { $inc: { credit: amount } });
-        if (!updatedAccount) {
-            return res.status(404).json({ message: 'User not found' });
-        }
         res.json({ message: 'Credit updated successfully', account: updatedAccount });
     } catch (error) {
         console.error(error);
@@ -99,14 +82,9 @@ exports.transferMoney = async (req, res) => {
             return res.status(400).json({ message: 'Insufficient funds' });
         }
 
-        const [updatedFromAccount, transaction] = await Promise.all([
-            Account.findByIdAndUpdate(fromAccountId, { $inc: { balance: -amount } }, { new: true }),
-            Transaction.create({ accountId: fromAccountId, toAccountId: toAccountId, amount, type: "transfer" })
-        ]);
-        const [updatedToAccount] = await Promise.all([
-            Account.findByIdAndUpdate(toAccountId, { $inc: { balance: amount } }, { new: true }),
-            Account.findByIdAndUpdate(fromAccountId, { $push: { transactions: transaction } }, { new: true })
-        ]);
+        const transaction = await createTransaction('Transfer', amount, fromAccountId, toAccountId);
+        const updatedFromAccount = await updateAccount(fromAccountId, { $inc: { balance: -amount }, $push: { transaction: transaction._id } }, { new: true });
+        const updatedToAccount = await updateAccount(toAccountId, { $inc: { balance: amount }, $push: { transaction: transaction._id } }, { new: true });
 
         res.json({
             message: 'Transfer completed successfully',
@@ -120,11 +98,12 @@ exports.transferMoney = async (req, res) => {
     }
 };
 
-//Get specific users transactions history
+// Get specific user's transactions history
 exports.getUsersTransactions = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const transactions = await Transaction.find({ userId });
+        const accountId = req.params.accountId;
+        const account = await Account.findById(accountId);
+        const transactions = account.transactions;
         res.json({ transactions });
     } catch (error) {
         console.error(error);

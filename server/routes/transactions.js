@@ -21,7 +21,8 @@ router.put('/credit', updateCredit);
 router.post('/transfer', transferMoney);
 
 //Get transactions 
-router.get('/UsersData/:id', getUsersTransactions);
+router.get('/UsersData/:accountId', getUsersTransactions);
+
 
 
 module.exports = router;

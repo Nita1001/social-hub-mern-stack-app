@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['withdrawal', 'deposit', 'transfer']
+        enum: ['withdrawal', 'deposit', 'transfer', 'credit']
     },
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
