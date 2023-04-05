@@ -1,11 +1,7 @@
 const Account = require('../models/accountSchema.js');
-const getUserIdFromAccountId = require('./getUserIdFromAccountId.js');
 
-const checkAndReturnAccount = async (accountId, userId) => {
+const checkAndReturnAccount = async (accountId) => {
     try {
-        if (!userId) {
-            userId = await getUserIdFromAccountId(accountId);
-        }
 
         const account = await Account.findById(accountId);
         if (!account) {

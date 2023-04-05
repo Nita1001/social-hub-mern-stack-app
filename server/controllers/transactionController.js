@@ -9,7 +9,7 @@ exports.depositCash = async (req, res) => {
         if (!userId || !accountId || !amount) {
             return res.status(400).json({ message: 'Missing fields in request body' });
         }
-        const account = await checkAndReturnAccount(accountId, userId);
+        const account = await checkAndReturnAccount(accountId);
         const previousBalance = account.balance;
         const transaction = await createTransaction('deposit', amount, accountId);
         const updatedAccount = await updateAccount(accountId, { $inc: { balance: amount }, $push: { transactions: transaction._id } });
@@ -32,12 +32,7 @@ exports.withdrawMoney = async (req, res) => {
         if (!userId || !accountId || !amount) {
             return res.status(400).json({ message: 'Missing fields in request body' });
         }
-        const response = await checkAndReturnAccount(accountId, userId);
-        if (response.status !== 200) {
-            return res.status(response.status).json({ message: response.message });
-        }
-
-        const account = response.account;
+        const account = await checkAndReturnAccount(accountId);
 
         if (account.balance + account.credit < amount) {
             return res.status(400).json({ message: 'Insufficient funds' });
@@ -46,7 +41,7 @@ exports.withdrawMoney = async (req, res) => {
         const transaction = await createTransaction('withdrawal', amount, accountId);
         const updatedAccount = await updateAccount(accountId, { $inc: { balance: -amount }, $push: { transactions: transaction._id } });
 
-        res.json({ message: 'Cash withdrawn successfully', account: updatedAccount, previousBalance: response.account.balance });
+        res.json({ message: 'Cash withdrawn successfully', account: updatedAccount, previousBalance: account.balance });
 
     } catch (error) {
         console.error(error);
@@ -61,7 +56,7 @@ exports.updateCredit = async (req, res) => {
         if (!userId || !accountId || !amount) {
             return res.status(400).json({ message: 'Missing fields in request body' });
         }
-        const accountCheck = await checkAndReturnAccount(accountId, userId);
+        const accountCheck = await checkAndReturnAccount(accountId);
         if (accountCheck.status !== 200) {
             return res.status(accountCheck.status).json({ message: accountCheck.message });
         }
