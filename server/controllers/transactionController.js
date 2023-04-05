@@ -6,18 +6,18 @@ const Account = require('../models/accountSchema.js');
 exports.depositCash = async (req, res) => {
     try {
         const { userId, accountId, amount } = req.body;
-        const account = await checkAndReturnAccount(accountId, userId);
-        if (account.status !== 200) {
-            return res.status(account.status).json({ message: account.message });
+        if (!userId || !accountId || !amount) {
+            return res.status(400).json({ message: 'Missing fields in request body' });
         }
-
+        const account = await checkAndReturnAccount(accountId, userId);
+        const previousBalance = account.balance;
         const transaction = await createTransaction('deposit', amount, accountId);
         const updatedAccount = await updateAccount(accountId, { $inc: { balance: amount }, $push: { transactions: transaction._id } });
 
         res.json({
             message: 'Cash deposited successfully',
             account: updatedAccount,
-            previousBalance: account.account.balance
+            previousBalance: previousBalance
         });
 
     } catch (error) {
@@ -29,6 +29,9 @@ exports.depositCash = async (req, res) => {
 exports.withdrawMoney = async (req, res) => {
     try {
         const { userId, accountId, amount } = req.body;
+        if (!userId || !accountId || !amount) {
+            return res.status(400).json({ message: 'Missing fields in request body' });
+        }
         const response = await checkAndReturnAccount(accountId, userId);
         if (response.status !== 200) {
             return res.status(response.status).json({ message: response.message });
@@ -55,7 +58,9 @@ exports.withdrawMoney = async (req, res) => {
 exports.updateCredit = async (req, res) => {
     try {
         const { userId, accountId, amount } = req.body;
-
+        if (!userId || !accountId || !amount) {
+            return res.status(400).json({ message: 'Missing fields in request body' });
+        }
         const accountCheck = await checkAndReturnAccount(accountId, userId);
         if (accountCheck.status !== 200) {
             return res.status(accountCheck.status).json({ message: accountCheck.message });
@@ -74,17 +79,22 @@ exports.updateCredit = async (req, res) => {
 exports.transferMoney = async (req, res) => {
     try {
         const { fromAccountId, toAccountId, amount } = req.body;
-
+        if (!fromAccountId || !toAccountId || !amount) {
+            return res.status(400).json({ message: 'Missing fields in request body' });
+        }
         const fromAccount = await checkAndReturnAccount(fromAccountId);
         //Checking for sufficient funds
+        console.log('fromAccount balance', fromAccount.balance);
+        console.log('fromAccount credit', fromAccount.credit);
         const totalBalance = fromAccount.balance + fromAccount.credit;
+        console.log('total Balance is:', totalBalance);
         if (totalBalance < amount) {
             return res.status(400).json({ message: 'Insufficient funds' });
         }
 
-        const transaction = await createTransaction('Transfer', amount, fromAccountId, toAccountId);
-        const updatedFromAccount = await updateAccount(fromAccountId, { $inc: { balance: -amount }, $push: { transaction: transaction._id } }, { new: true });
-        const updatedToAccount = await updateAccount(toAccountId, { $inc: { balance: amount }, $push: { transaction: transaction._id } }, { new: true });
+        const transaction = await createTransaction('transfer', amount, fromAccountId, toAccountId);
+        const updatedFromAccount = await updateAccount(fromAccountId, { $inc: { balance: -amount }, $push: { transactions: transaction._id } });
+        const updatedToAccount = await updateAccount(toAccountId, { $inc: { balance: amount }, $push: { transactions: transaction._id } });
 
         res.json({
             message: 'Transfer completed successfully',
