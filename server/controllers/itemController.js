@@ -57,3 +57,20 @@ exports.getItem = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 }
+
+exports.updateItem = async (req, res) => {
+    try {
+        const itemId = req.params.itemId;
+        const itemToUpdate = await Item.findById(itemId);
+        const previousItem = { ...itemToUpdate.toObject() };
+        Object.keys(req.body).forEach((key) => {
+            itemToUpdate[key] = req.body[key];
+        });
+        await itemToUpdate.save();
+
+        res.json({ message: "Item updated successfully", newItem: itemToUpdate, previousItem: previousItem })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}

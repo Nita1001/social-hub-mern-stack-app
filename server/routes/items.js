@@ -3,7 +3,8 @@ const router = express.Router();
 const {
     createItem,
     getItems,
-    getItem
+    getItem,
+    updateItem
 } = require('../controllers/itemController.js');
 
 
@@ -15,5 +16,8 @@ router.get('/:inventoryId', getItems);
 
 //Get item
 router.get('/item/:itemId', getItem);
+
+//Update item
+router.put('/update-item/:itemId', updateItem)
 
 module.exports = router;
