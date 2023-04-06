@@ -20,10 +20,6 @@ const message = new mongoose.Schema({
         enum: ['sent', 'delivered', 'read'],
         default: 'sent'
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model('Message', item);
+module.exports = mongoose.model('Message', message);
