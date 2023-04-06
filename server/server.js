@@ -23,6 +23,7 @@ app.use('/api/accounts', require('./routes/accounts'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/inventories', require('./routes/inventories'));
 app.use('/api/items', require('./routes/items'));
+app.use('/api/messages', require('./routes/messages.js'));
 // Error handling middleware
 app.use(errorHandler);
 
