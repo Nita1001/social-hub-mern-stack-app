@@ -1,16 +1,29 @@
-const Inventory = require('../models/inventorySchema.js');
+const Item = require('../models/itemSchema.js');
+
 const getInventoryIdFromUserId = require('../helpers/getInventoryIdFromUserId.js');
+const updateInventory = require('../helpers/updateInventory.js');
 
 exports.createItem = async (req, res) => {
     try {
         const { userId, title, description, category, image, status } = req.body;
-        console.log('req.body', req.body);
         const inventoryId = await getInventoryIdFromUserId(userId);
-        console.log('111', inventoryId);
+
+        const item = new Item({
+            owner: userId,
+            inventory: inventoryId,
+            title,
+            description,
+            category,
+            image,
+            status
+        })
+        const savedItem = await item.save();
+        const updatedInventory = await updateInventory(inventoryId, { $push: { items: savedItem._id } });
 
         res.json({
             message: 'Item created successfully',
-            owner: userId
+            item: savedItem,
+            Inventory: updatedInventory
         })
 
     } catch (error) {
