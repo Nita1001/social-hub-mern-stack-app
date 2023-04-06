@@ -22,6 +22,7 @@ const item = new mongoose.Schema({
         enum: ['shonen', 'shojo', 'seinen']
     },
     image: {
+        required: true,
         type: String,
     },
     status: {
