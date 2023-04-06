@@ -22,7 +22,7 @@ exports.depositCash = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server Error' });
     }
 }
 
@@ -45,7 +45,7 @@ exports.withdrawMoney = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server Error' });
     }
 }
 
@@ -63,7 +63,7 @@ exports.updateCredit = async (req, res) => {
         res.json({ message: 'Credit updated successfully', account: updatedAccount, previousCredit: account.credit });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -93,7 +93,7 @@ exports.transferMoney = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -106,6 +106,6 @@ exports.getUsersTransactions = async (req, res) => {
         res.json({ transactions });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Server Error' });
     }
 };
