@@ -15,6 +15,28 @@ exports.getUsers = async (req, res) => {
     }
 };
 
+exports.login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email' });
+        }
+
+        const matchedUser = await User.findOne({ email, password });
+        if (!matchedUser) {
+            return res.status(401).json({ message: 'Invalid Password' });
+        }
+
+        res.status(200).json({ message: 'Login successful', userId: user._id });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+
+    }
+}
+
 exports.getUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
