@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useState, createContext, useEffect } from "react";
+import { loginUser } from "../api/userServices";
 
 const LoginContext = createContext({
     isLoggedIn: false,
@@ -18,19 +18,9 @@ const LoginProvider = ({ children }) => {
     }, [isLoggedIn]);
 
     const login = async (email, password) => {
-        console.log("email", email);
-        console.log("pass", password);
-        try {
-            const response = await axios.post("/api/users/login", {
-                email: email.toString(),
-                password: password.toString(),
-            });
-            console.log("222222", response);
-            setIsLoggedIn(true);
-            setUserId(response.data.userId);
-        } catch (error) {
-            console.error(error);
-        }
+        const response = await loginUser(email, password);
+        setIsLoggedIn(true);
+        setUserId(response.data.userId);
     };
 
     const logout = () => setIsLoggedIn(false);
