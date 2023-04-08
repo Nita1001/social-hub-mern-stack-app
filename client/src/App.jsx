@@ -1,17 +1,21 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Login, Register } from "./pages";
+import { Login, Register, Profile, NotFound, Home } from "./pages";
 import SharedLayout from "./components/layout/SharedLayout";
+
 import "./App.css";
 
 function App() {
     return (
         <BrowserRouter>
-            <div className="">
-                <Routes>
+            <Routes>
+                <Route path="/" element={<SharedLayout />}>
+                    <Route index element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                </Routes>
-            </div>
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="*" element={<NotFound />} />
+                </Route>
+            </Routes>
         </BrowserRouter>
     );
 }
