@@ -19,8 +19,13 @@ const LoginProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const response = await loginUser(email, password);
-        setIsLoggedIn(true);
-        setUserId(response.data.userId);
+        if (response.error) {
+            return response;
+        } else {
+            setIsLoggedIn(true);
+            setUserId(response.data.userId);
+            return response;
+        }
     };
 
     const logout = () => setIsLoggedIn(false);
