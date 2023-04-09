@@ -18,13 +18,14 @@ const LoginProvider = ({ children }) => {
     }, [isLoggedIn]);
 
     const login = async (email, password) => {
-        const response = await loginUser(email, password);
-        if (response.error) {
-            return response;
-        } else {
+        try {
+            const response = await loginUser(email, password);
             setIsLoggedIn(true);
             setUserId(response.data.userId);
             return response;
+        } catch (error) {
+            console.error(error);
+            return error;
         }
     };
 
