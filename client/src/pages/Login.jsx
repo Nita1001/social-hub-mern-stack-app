@@ -1,11 +1,13 @@
 import React from "react";
-import Form from "../components/Form";
+import LoginForm from "../components/LoginForm";
+import { Link } from "react-router-dom";
 
 const Login = () => {
     return (
-        <>
-            <Form />
-        </>
+        <div className="form-container">
+            <LoginForm />
+            <Link to="/register">Not registered?</Link>
+        </div>
     );
 };
 
