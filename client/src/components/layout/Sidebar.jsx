@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./sidebar.style.css";
+import "../styles/Sidebar.style.css";
 
 const Sidebar = () => {
     const [showSidebar, setShowSidebar] = useState(true);
+
     const handleToggleSidebar = () => {
         setShowSidebar(!showSidebar);
     };
