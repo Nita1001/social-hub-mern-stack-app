@@ -30,7 +30,12 @@ const RegisterForm = () => {
                     onChange={handleChange}
                 />
                 {errors.phone && <span>{errors.phone}</span>}
-                <input type="number" id="phone" placeholder="Phone" />
+                <input
+                    type="number"
+                    name="phone"
+                    placeholder="Phone"
+                    onChange={handleChange}
+                />
                 {errors.location && <span>{errors.location}</span>}
                 <input
                     type="text"
