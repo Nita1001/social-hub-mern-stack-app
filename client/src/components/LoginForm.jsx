@@ -1,9 +1,11 @@
 import React from "react";
 import useForm from "../hooks/useForm";
+import Spinner from "../components/Spinner";
+
 import "./styles/Form.style.css";
 
 const LoginForm = () => {
-    const { errors, handleChange, handleSubmit } = useForm("login");
+    const { errors, handleChange, handleSubmit, isLoading } = useForm("login");
 
     return (
         <div className="container">
@@ -23,9 +25,14 @@ const LoginForm = () => {
                     onChange={handleChange}
                 />
                 {errors.loginError && <span>{errors.loginError}</span>}
-                <button type="submit" id="login-btn">
-                    Login
-                </button>
+
+                {isLoading ? (
+                    <Spinner />
+                ) : (
+                    <button type="submit" id="login-btn">
+                        Login
+                    </button>
+                )}
             </form>
         </div>
     );
