@@ -1,0 +1,85 @@
+.conversation-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 80vh;
+}
+.conversation-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 1.8px;
+    overflow-y: scroll;
+    width: 42vw;
+}
+.conversation-input {
+    width: 42vw;
+    padding: 0.4rem;
+    box-sizing: border-box;
+}
+
+.conversation-input input {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: rgb(69, 65, 65);
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    background-color: #f2f2f2;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    border-radius: 1rem;
+    width: 15rem;
+    padding: 0.8rem;
+}
+
+.sent {
+    align-self: flex-end;
+    color: white;
+    background-color: #1a2634;
+    /* background-color: #0e11117e; */
+    /* background-color: #e37c7c; */
+    /* background-color: #ed254e; */
+}
+
+.received {
+    align-self: flex-start;
+    color: white;
+    background-color: #4fa188e2;
+    /* background-color: #7cc6e3; */
+    /* background-color: #1f2d16; */
+}
+
+.message-content {
+    display: flex;
+}
+
+/* Hiding the default scrollbar */
+/* .conversation-box::-webkit-scrollbar {
+    display: none;
+} */
+.conversation-box::-webkit-scrollbar {
+    width: 0.3rem;
+}
+
+.conversation-box::-webkit-scrollbar-track {
+    background-color: #f2f2f2;
+}
+
+.conversation-box::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2rem;
+}
+
+.conversation-box::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
