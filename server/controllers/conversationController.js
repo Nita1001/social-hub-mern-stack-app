@@ -1,4 +1,4 @@
-const Conversation = require('../models/conversation');
+const Conversation = require('../models/conversationSchema.js');
 
 // Get conversations
 exports.getConversations = async (req, res, next) => {
