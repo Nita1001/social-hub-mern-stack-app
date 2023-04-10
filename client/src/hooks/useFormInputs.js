@@ -1,11 +1,13 @@
 import { useState } from 'react'
 
-const useInput = (initialValues) => {
+const useFormInputs = (initialValues) => {
 
     const [values, setValues] = useState(initialValues);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
+        console.log('name', name);
+        console.log('value', value)
         setValues((preValues) => (
             {
                 ...preValues,
@@ -15,4 +17,4 @@ const useInput = (initialValues) => {
     return [values, handleChange];
 }
 
-export default useInput;
+export default useFormInputs;
