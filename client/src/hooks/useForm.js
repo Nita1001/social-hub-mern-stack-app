@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../contexts/LoginContext";
 import useFormInputs from './useFormInputs';
 import { validateLogin, validateRegister } from '../utils/validateFormInput';
+import useSpinner from "../hooks/useSpinner";
 
 const useForm = (type) => {
+    const { isLoading, setIsLoading } = useSpinner();
 
     const initialValues = {
         firstName: '',
@@ -28,20 +30,24 @@ const useForm = (type) => {
         if (response.error) {
             setErrors({ loginError: response.error });;
         } else {
+            setIsLoading(false);
             navigate("/profile");
         }
     };
 
     const handleRegistration = async () => {
         const { firstName, lastName, username, phone, location, email, password } = values;
+        console.log('VALUES', values)
         register(firstName, lastName, username, phone, location, email, password);
+        setIsLoading(false);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setIsLoading(true);
+        console.log('type', type)
         switch (type) {
             case 'register':
-                console.log(errors)
                 const registerErrors = validateRegister(values);
                 setErrors(registerErrors);
                 const noRegErrors = Object.keys(registerErrors).length === 0;
@@ -56,6 +62,7 @@ const useForm = (type) => {
                 setErrors(loginErrors);
                 const noLoginErrors = Object.keys(loginErrors).length === 0;
                 if (noLoginErrors) {
+                    console.log('11111111111111111')
                     handleLogin();
                 } else {
                     console.log(noLoginErrors)
@@ -67,7 +74,8 @@ const useForm = (type) => {
         values,
         errors,
         handleChange,
-        handleSubmit
+        handleSubmit,
+        isLoading
     };
 };
 
