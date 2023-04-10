@@ -4,8 +4,11 @@ const dotenv = require('dotenv');
 const path = require('path');
 const connectDb = require('./config/dbConn.js');
 const errorHandler = require('./middleware/errorHandler.js');
+const http = require('http');
+const { init } = require('./events/socket.js');
 
 const app = express();
+const server = http.createServer(app);
 
 // Load environment config.env 
 dotenv.config({ path: './config/config.env' });
@@ -22,17 +25,26 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/accounts', require('./routes/accounts'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/inventories', require('./routes/inventories'));
-app.use('/api/items', require('./routes/items'));
-app.use('/api/messages', require('./routes/messages.js'));
+app.use('/api/inventories/items', require('./routes/items'));
+app.use('/api/conversations', require('./routes/conversations.js'));
+app.use('/api/conversations/messages', require('./routes/messages.js'));
 // Error handling middleware
 app.use(errorHandler);
 
-// Start server
-const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB before listening 
-connectDb().then(() => {
-    app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
-})
+(async () => {
+    try {
+        await connectDb();
 
+        init(server);
 
+        const PORT = process.env.PORT || 5000;
+        server.listen(PORT, () => {
+            console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error(error.message);
+        process.exit(1);
+    }
+})();
