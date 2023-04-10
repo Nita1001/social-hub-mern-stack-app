@@ -8,6 +8,7 @@ const LoginContext = createContext({
 });
 
 const LoginProvider = ({ children }) => {
+    const [userData, setUserData] = useState({});
     const [userId, setUserId] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(
         JSON.parse(localStorage.getItem("isLoggedIn")) || false
@@ -20,8 +21,10 @@ const LoginProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await loginUser(email, password);
+            const user = response.data;
             setIsLoggedIn(true);
-            setUserId(response.data.userId);
+            setUserId(user.userId);
+            setUserData({ name: user.username, phone: user.phone });
             return response;
         } catch (error) {
             console.error(error);
@@ -32,7 +35,9 @@ const LoginProvider = ({ children }) => {
     const logout = () => setIsLoggedIn(false);
 
     return (
-        <LoginContext.Provider value={{ isLoggedIn, login, logout, userId }}>
+        <LoginContext.Provider
+            value={{ isLoggedIn, login, logout, userId, userData }}
+        >
             {children}
         </LoginContext.Provider>
     );
