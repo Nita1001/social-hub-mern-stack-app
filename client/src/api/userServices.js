@@ -22,7 +22,7 @@ export const register = async (firstName,
         return response;
     } catch (error) {
         console.error(error);
-
+        return { error: 'Server Error' };;
     }
 }
 
@@ -36,5 +36,20 @@ export const loginUser = async (email, password) => {
         return response;
     } catch (error) {
         console.error(error);
+        if (error.response && error.response.status === 401) {
+            return { error: 'Invalid email or password' };
+        } else {
+            return { error: 'Server Error' };;
+        }
+    }
+};
+
+export const getUsers = async () => {
+    try {
+        const response = await axios.get('/api/users');
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return { error: 'Server Error' };
     }
 };
