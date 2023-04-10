@@ -32,10 +32,9 @@ export const validateRegister = (values) => {
     }
 
     if (!values.phone.trim()) {
-        console.log('111', values.phone)
-        errors.phone = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(values.phone)) {
-        errors.phone = 'Phone number must be 10 digits';
+        errors.phone = "Phone number required";
+    } else if (!/^\d{10}$/.test(values.phone.trim())) {
+        errors.phone = "Invalid phone number";
     }
 
     if (!values.location.trim()) {
