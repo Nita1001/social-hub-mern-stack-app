@@ -20,6 +20,11 @@ const message = new mongoose.Schema({
         enum: ['sent', 'delivered', 'read'],
         default: 'sent'
     },
+    conversationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Conversation',
+        required: true
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Message', message);
