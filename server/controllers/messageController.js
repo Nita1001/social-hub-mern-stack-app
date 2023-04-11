@@ -1,6 +1,7 @@
 const Message = require('../models/messageSchema.js');
 const User = require('../models/userSchema.js');
 const updateMessages = require('../helpers/updateMessages.js');
+
 exports.createMessage = async (body) => {
     const { conversationId, from, to, content } = body;
 
@@ -17,16 +18,12 @@ exports.createMessage = async (body) => {
         });
 
         const savedMessage = await thisMessage.save();
+        console.log('11111111111111111', savedMessage, body);
+        const conversationUpdate = { $push: { messages: savedMessage.id } };
 
-        const updatePromises = [
-            updateMessages(from, { $push: { messages: savedMessage._id } }),
-            updateMessages(to, { $push: { messages: savedMessage._id } })
-        ];
-
-        const [updatedFromMessages, updatedToMessages] = await Promise.all(updatePromises);
-
-        console.log('updatedFromMessages', updatedFromMessages);
-        console.log('updatedToMessages', updatedToMessages);
+        const updatedConversation = await updateMessages(conversationId, conversationUpdate);
+        const updatedMessages = updatedConversation.messages;
+        console.log('updatedMessages', updatedMessages);
 
         return {
             message: 'Message sent successfully',
@@ -52,5 +49,3 @@ exports.getMessages = async (req, res) => {
         res.status(500).json({ message: 'Server Error, did not g et m essa m ge ' });
     }
 }
-
-//TODO: socket.io 
