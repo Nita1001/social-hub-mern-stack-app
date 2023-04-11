@@ -1,5 +1,5 @@
 const Conversation = require('../models/conversationSchema.js');
-
+const { updateUsersConversations } = require('../helpers/updateUsersConversations.js');
 // Get conversations
 exports.getConversations = async (req, res) => {
     try {
@@ -12,16 +12,14 @@ exports.getConversations = async (req, res) => {
 
 // Get conversation between 2 users 
 exports.getUsersConversation = async (req, res) => {
-    const { userAId, userBId } = req.params;
+    const userAId = req.params.userAId;
+    const userBId = req.params.userBId;
+    console.log('userAId and userBId', userAId, userBId);
     try {
         const conversation = await Conversation.findOne({
             users: { $all: [userAId, userBId] },
         });
-        if (conversation) {
-            res.send(conversation);
-        } else {
-            res.send(null);
-        }
+        res.status(200).json(conversation);
     } catch (err) {
         res.status(500).json({ message: 'Failed to get conversation between users' });
     }
@@ -41,9 +39,20 @@ exports.getConversationByUserId = async (req, res) => {
 // Create new conversation
 exports.createConversation = async (req, res) => {
     try {
-        const { users } = req.body;
-        const conversation = new Conversation({ users });
+        const { userAId, userBId } = req.body;
+
+        console.log('84 users', userAId, userBId);
+
+        const conversation = new Conversation({
+            users: [userAId, userBId]
+        });
         const savedConversation = await conversation.save();
+        console.log('84 SAVED CONVO', savedConversation);
+        const updatedUserAConversations = updateUsersConversations(userAId, { $push: { conversations: savedConversation } });
+        const updatedUserBConversations = updateUsersConversations(userBId, { $push: { conversations: savedConversation } });
+        console.log('889299992893218908301', updatedUserAConversations);
+        console.log('889299992893218908301', updatedUserBConversations);
+
         res.status(201).json(savedConversation);
     } catch (err) {
         res.status(500).json({ message: 'Failed to create conversation' });

@@ -9,6 +9,6 @@ router.post('/', createConversation);
 router.get('/:userId', getConversationByUserId);
 
 // Get conversation between 2 users 
-router.get('/:user1Id/:user2Id', getUsersConversation);
+router.get('/:userAId/:userBId', getUsersConversation);
 
 module.exports = router;
