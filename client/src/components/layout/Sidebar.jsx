@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../styles/Sidebar.style.css";
 
 const Sidebar = () => {
-    const [showSidebar, setShowSidebar] = useState(true);
+    const [showSidebar, setShowSidebar] = useState(false);
 
     const handleToggleSidebar = () => {
         setShowSidebar(!showSidebar);
