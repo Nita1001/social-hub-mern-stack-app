@@ -1,41 +1,57 @@
 const Conversation = require('../models/conversationSchema.js');
 
 // Get conversations
-exports.getConversations = async (req, res, next) => {
+exports.getConversations = async (req, res) => {
     try {
-        const conversations = await Conversation.find().populate('users', 'username');
+        const conversations = await Conversation.find().populate('users', '_id');
         res.status(200).json(conversations);
     } catch (err) {
-        next(err);
+        res.status(500).json({ message: 'Failed to get conversations' });
     }
 };
 
-// Get conversation by id
-exports.getConversationByUserId = async (req, res, next) => {
+// Get conversation between 2 users 
+exports.getUsersConversation = async (req, res) => {
+    const { userAId, userBId } = req.params;
     try {
-        const conversation = await Conversation.findById(req.params.id).populate('users', 'username');
-        if (!conversation) {
-            return res.status(404).json({ message: 'Conversation not found' });
+        const conversation = await Conversation.findOne({
+            users: { $all: [userAId, userBId] },
+        });
+        if (conversation) {
+            res.send(conversation);
+        } else {
+            res.send(null);
         }
-        res.status(200).json(conversation);
     } catch (err) {
-        next(err);
+        res.status(500).json({ message: 'Failed to get conversation between users' });
+    }
+};
+
+// Get conversation by user id
+exports.getConversationByUserId = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const conversations = await Conversation.find({ users: userId }).populate('users', '_id');
+        res.status(200).json(conversations);
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to get conversation by user ID' });
     }
 };
 
 // Create new conversation
-exports.createConversation = async (req, res, next) => {
+exports.createConversation = async (req, res) => {
     try {
         const { users } = req.body;
-        const conversation = await Conversation.create({ users });
-        res.status(201).json(conversation);
+        const conversation = new Conversation({ users });
+        const savedConversation = await conversation.save();
+        res.status(201).json(savedConversation);
     } catch (err) {
-        next(err);
+        res.status(500).json({ message: 'Failed to create conversation' });
     }
 };
 
 // Delete conversation by id
-exports.deleteConversationById = async (req, res, next) => {
+exports.deleteConversationById = async (req, res) => {
     try {
         const conversation = await Conversation.findByIdAndDelete(req.params.id);
         if (!conversation) {
@@ -43,6 +59,21 @@ exports.deleteConversationById = async (req, res, next) => {
         }
         res.status(200).json({ message: 'Conversation deleted' });
     } catch (err) {
-        next(err);
+        res.status(500).json({ message: 'Failed to delete conversation' });
     }
 };
+
+
+    // Create new conversation
+    // exports.createConversation = async (req, res, next) => {
+    //     try {
+    //         const { userA, userB } = req.body;
+    //         const conversation = new Conversation(
+    //             { users: [userA._id, userB._id] }
+    //         );
+    //         const savedConversation = await conversation.save();
+    //         res.status(201).json(savedConversation);
+    //     } catch (err) {
+    //         next(err);
+    //     }
+    // };
