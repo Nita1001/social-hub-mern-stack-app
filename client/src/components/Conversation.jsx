@@ -18,20 +18,26 @@ const Conversation = () => {
     const [inputValue, setInputValue] = useState("");
 
     const setConversationAndJoinRoom = (conversation) => {
-        console.log("22 11 22 conversation", conversation);
+        console.log("setConversationAndJoinRoom conversation 1 ", conversation);
         if (conversation) {
-            console.log("22 11 33 conversation", conversation);
+            console.log(
+                "setConversationAndJoinRoom conversation 2 ",
+                conversation
+            );
             setConversation(conversation);
-            socket.emit("2 join", conversation._id);
+            socket.emit("join", conversation._id);
+
             setMessages(conversation.messages);
         } else {
         }
     };
 
-    const handleMessage = (messages) => {
-        if (messages.conversationId === conversation._id) {
-            setMessages((prevMessages) => [...prevMessages, messages]);
-        }
+    const handleMessage = (message) => {
+        console.log("handleMessage", message);
+        setMessages((prevMessages) => {
+            console.log("31231", typeof prevMessages);
+            return [...prevMessages, message];
+        });
     };
 
     useEffect(() => {
@@ -50,18 +56,21 @@ const Conversation = () => {
 
                     const response = await getConversation(conversation._id);
                     if (response) setMessages(response.messages);
-                    console.log("COW COW COW", response);
+                    console.log("useEffect getConversation res", response);
                 } else {
                     const newConversation = await createNewConversation(
                         currentUser,
                         selectedUser._id
                     );
-                    console.log("000 newConversation", newConversation);
+                    console.log(
+                        "useEffect newConversation res",
+                        newConversation
+                    );
 
                     setConversationAndJoinRoom(newConversation);
                 }
             } catch (error) {
-                console.log("Error fetching conversation: ", error);
+                console.log("Error fetching conversation ", error);
             }
         };
 
@@ -70,6 +79,7 @@ const Conversation = () => {
         socket.on("message", handleMessage);
 
         return () => {
+            socket.off("message", handleMessage);
             if (conversation) {
                 socket.emit("leave", conversation._id);
             }
@@ -77,11 +87,9 @@ const Conversation = () => {
     }, [currentUser, selectedUser]);
 
     const sendMessage = async (message) => {
-        if (!message.trim()) {
+        if (!message.trim() || !conversation) {
             return; // Do nothing if message is empty or contains only whitespace
         }
-        console.log("5 selected user ID", selectedUser._id);
-        console.log("5 message is:", message);
 
         // Create a new message object
         const newMessage = {
@@ -90,14 +98,17 @@ const Conversation = () => {
             to: selectedUser._id,
             content: message,
         };
-        console.log("5 new message is:", newMessage);
 
         // Send the message to the server
         socket.emit("message", newMessage);
-        // update messages state
-        setMessages([...messages, message]);
+
         // Add the new message to the messages array
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        setMessages((prevMessages) => {
+            console.log("31231", typeof prevMessages);
+            console.log("31231 messages", messages);
+
+            return [...prevMessages, ...newMessage];
+        });
     };
 
     const handleUserSelected = (user) => {
@@ -106,16 +117,17 @@ const Conversation = () => {
     };
 
     const filteredMessages = useMemo(() => {
+        console.log("MMM", messages);
         return messages
             ? messages.filter(
                   (message) =>
-                      (message.sender === currentUser &&
-                          message.receiver === selectedUser._id) ||
-                      (message.sender === selectedUser._id &&
-                          message.receiver === currentUser)
+                      (message.from === currentUser &&
+                          message.to === selectedUser._id) ||
+                      (message.from === selectedUser._id &&
+                          message.to === currentUser)
               )
             : [];
-    }, [currentUser, selectedUser, messages, conversation]);
+    }, [selectedUser._id, messages]);
 
     return (
         <div className="conversation-container">
@@ -128,13 +140,16 @@ const Conversation = () => {
                             {userData.username} In Conversation with {""}
                             {selectedUser.username}
                         </h2>
-                        {filteredMessages.map((message) => (
-                            <Message
-                                key={message.id}
-                                message={message}
-                                sentByCurrUser={message.sender === currentUser}
-                            />
-                        ))}
+                        {messages &&
+                            filteredMessages.map((message) => (
+                                <Message
+                                    key={message.id}
+                                    message={message}
+                                    sentByCurrUser={
+                                        message?.from === currentUser
+                                    }
+                                />
+                            ))}
                     </>
                 )}
             </div>
