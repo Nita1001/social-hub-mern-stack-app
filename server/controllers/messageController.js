@@ -1,32 +1,45 @@
 const Message = require('../models/messageSchema.js');
 const User = require('../models/userSchema.js');
 const updateMessages = require('../helpers/updateMessages.js');
+exports.createMessage = async (body) => {
+    const { conversationId, from, to, content } = body;
 
-exports.createMessage = async (req, res) => {
+    if (!conversationId || !from || !to || !content) {
+        throw new Error('Missing required fields');
+    }
+
     try {
-        const { from, to, content } = req.body;
-
-        const message = new Message({
+        const thisMessage = new Message({
             from,
             to,
-            content
+            content,
+            conversationId
         });
-        const savedMessage = await message.save();
-        const updatedFromMessages = await updateMessages(from, { $push: { messages: savedMessage._id } });
-        const updatedToMessages = await updateMessages(to, { $push: { messages: savedMessage._id } });
+
+        const savedMessage = await thisMessage.save();
+
+        const updatePromises = [
+            updateMessages(from, { $push: { messages: savedMessage._id } }),
+            updateMessages(to, { $push: { messages: savedMessage._id } })
+        ];
+
+        const [updatedFromMessages, updatedToMessages] = await Promise.all(updatePromises);
+
         console.log('updatedFromMessages', updatedFromMessages);
         console.log('updatedToMessages', updatedToMessages);
-        res.json({
+
+        return {
             message: 'Message sent successfully',
-            from: from,
-            to: to,
-            content
-        });
+            from,
+            to,
+            content,
+            conversationId
+        };
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        throw new Error('Server Error');
     }
-}
+};
 
 exports.getMessages = async (req, res) => {
     try {
@@ -36,6 +49,8 @@ exports.getMessages = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: 'Server Error' });
+        res.status(500).json({ message: 'Server Error, did not g et m essa m ge ' });
     }
 }
+
+//TODO: socket.io 
