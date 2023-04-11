@@ -1,43 +1,66 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
-import Message from "./Message";
-import { LoginContext } from "../contexts/LoginContext.jsx";
-import { socket } from "../events/socket.js"; // import socket object
-import UsersList from "./UsersList";
-import "./styles/conversation.style.css";
+import React, {
+    useContext,
+    useState,
+    useEffect,
+    useMemo,
+    useReducer,
+} from "react";
 import {
     createNewConversation,
     getUsersConversation,
     getConversation,
 } from "../api/conversationServices.js";
+import Message from "./Message";
+import { LoginContext } from "../contexts/LoginContext.jsx";
+import { socket } from "../events/socket.js";
+import UsersList from "./UsersList";
+import conversationReducer, {
+    conversationActions,
+} from "../reducers/conversationReducer.js";
+import "./styles/conversation.style.css";
 
 const Conversation = () => {
     const { userId: currentUser, userData } = useContext(LoginContext);
+
     const [selectedUser, setSelectedUser] = useState({});
-    const [conversation, setConversation] = useState({});
-    const [messages, setMessages] = useState([]);
-    const [inputValue, setInputValue] = useState("");
+
+    const [state, dispatch] = useReducer(conversationReducer, initialState);
 
     const setConversationAndJoinRoom = (conversation) => {
-        console.log("setConversationAndJoinRoom conversation 1 ", conversation);
+        console.log("setConversationAndJoinRoom 1 ", conversation);
         if (conversation) {
-            console.log(
-                "setConversationAndJoinRoom conversation 2 ",
-                conversation
-            );
-            setConversation(conversation);
-            socket.emit("join", conversation._id);
+            console.log("setConversationAndJoinRoom 2 ", conversation);
+            // setConversation(conversation); before
+            const { selectedConversation: conversation } = state;
+            const setConversation = (conversation) =>
+                dispatch({
+                    type: conversationActions.SET_SELECTED_CONVERSATION,
+                    payload: conversation.messages,
+                });
+            // setMessages(conversation.messages); before
 
-            setMessages(conversation.messages);
+            socket.emit("join", conversation._id);
         } else {
+            console.log(`conversation is probably ${conversation}, ''? `);
         }
     };
 
     const handleMessage = (message) => {
         console.log("handleMessage", message);
-        setMessages((prevMessages) => {
-            console.log("31231", typeof prevMessages);
-            return [...prevMessages, message];
-        });
+
+        const message = state;
+        const setMessages = (prevMessages) => {
+            dispatch({
+                type: conversationActions.SET_MESSAGE,
+                payload: [...prevMessages, message],
+            });
+        };
+        return setMessages;
+        // setMessages((prevMessages) => {
+        //     console.log("31231", typeof prevMessages);
+        //     return [...prevMessages, message];
+        // });
+        // before
     };
 
     useEffect(() => {
@@ -55,7 +78,12 @@ const Conversation = () => {
                     const conversation = existingConversation;
 
                     const response = await getConversation(conversation._id);
-                    if (response) setMessages(response.messages);
+                    if (response) {
+                        const setMessages = handleMessage(); // try
+                        setMessages(response.messages);
+                        // setMessages(response.messages); before
+                    }
+
                     console.log("useEffect getConversation res", response);
                 } else {
                     const newConversation = await createNewConversation(
