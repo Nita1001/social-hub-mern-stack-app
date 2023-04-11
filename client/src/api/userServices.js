@@ -33,7 +33,7 @@ export const loginUser = async (email, password) => {
             password: password.toString(),
         });
         console.log('response', response);
-        return response;
+        return response.data;
     } catch (error) {
         console.error(error);
         if (error.response && error.response.status === 401) {
