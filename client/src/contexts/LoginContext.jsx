@@ -21,10 +21,10 @@ const LoginProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await loginUser(email, password);
-            const user = response.data;
+            const user = response.user;
             setIsLoggedIn(true);
-            setUserId(user.userId);
-            setUserData({ name: user.username, phone: user.phone });
+            setUserId(user._id);
+            setUserData({ username: user.username, phone: user.phone });
             return response;
         } catch (error) {
             console.error(error);
