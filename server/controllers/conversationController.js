@@ -40,22 +40,19 @@ exports.getConversationByUserId = async (req, res) => {
 exports.createConversation = async (req, res) => {
     try {
         const { userAId, userBId } = req.body;
-
-        console.log('84 users', userAId, userBId);
-
         const conversation = new Conversation({
             users: [userAId, userBId]
         });
         const savedConversation = await conversation.save();
-        console.log('84 SAVED CONVO', savedConversation);
-        const updatedUserAConversations = updateUsersConversations(userAId, { $push: { conversations: savedConversation } });
-        const updatedUserBConversations = updateUsersConversations(userBId, { $push: { conversations: savedConversation } });
-        console.log('889299992893218908301', updatedUserAConversations);
-        console.log('889299992893218908301', updatedUserBConversations);
+        await updateUsersConversations(userAId, { $push: { conversations: savedConversation } });
+        await updateUsersConversations(userBId, { $push: { conversations: savedConversation } });
+        // console.log('889299992893218908301', updatedUserAConversations);
+        // console.log('889299992893218908301', updatedUserBConversations);
 
         res.status(201).json(savedConversation);
     } catch (err) {
-        res.status(500).json({ message: 'Failed to create conversation' });
+        console.error(err);
+        res.status(500).json({ message: 'Failed to create conversation', error: err.message });
     }
 };
 
@@ -71,18 +68,3 @@ exports.deleteConversationById = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete conversation' });
     }
 };
-
-
-    // Create new conversation
-    // exports.createConversation = async (req, res, next) => {
-    //     try {
-    //         const { userA, userB } = req.body;
-    //         const conversation = new Conversation(
-    //             { users: [userA._id, userB._id] }
-    //         );
-    //         const savedConversation = await conversation.save();
-    //         res.status(201).json(savedConversation);
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // };
