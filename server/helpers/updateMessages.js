@@ -1,11 +1,12 @@
 
 const Conversation = require('../models/conversationSchema.js');
 
-const updateMessages = async (accountId, update) => {
+const updateMessages = async (conversationId, update) => {
     try {
-        const updatedMessages = await Conversation.findByIdAndUpdate(accountId, update, { new: true });
-        console.log('3333', updatedMessages);
-        return updatedMessages;
+        console.log('conversationId, update', conversationId, update);
+        const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, update, { new: true });
+        console.log('updatedConversation', updatedConversation);
+        return updatedConversation;
     } catch (error) {
         console.error('Error updating user after creating item');
         throw new Error(error.message);
@@ -13,3 +14,4 @@ const updateMessages = async (accountId, update) => {
 }
 
 module.exports = updateMessages;
+
