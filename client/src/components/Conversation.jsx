@@ -1,30 +1,30 @@
-import React, {
-    useContext,
-    useState,
-    useEffect,
-    useMemo,
-    useReducer,
-} from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
+import { LoginContext } from "../contexts/LoginContext.jsx";
+import { socket } from "../events/socket.js";
+import UsersList from "./UsersList";
+import Message from "./Message";
+
+import conversationReducer, {
+    conversationActions,
+} from "../reducers/conversationReducer.js";
+
 import {
     createNewConversation,
     getUsersConversation,
     getConversation,
 } from "../api/conversationServices.js";
-import Message from "./Message";
-import { LoginContext } from "../contexts/LoginContext.jsx";
-import { socket } from "../events/socket.js";
-import UsersList from "./UsersList";
-import conversationReducer, {
-    conversationActions,
-} from "../reducers/conversationReducer.js";
+
 import "./styles/conversation.style.css";
+import useConversation from "../hooks/useConversation.js";
 
 const Conversation = () => {
+    const { conversation, messages, error, dispatch } = useConversation;
+
     const { userId: currentUser, userData } = useContext(LoginContext);
 
     const [selectedUser, setSelectedUser] = useState({});
 
-    const [state, dispatch] = useReducer(conversationReducer, initialState);
+    // const [state, dispatch] = useReducer(conversationReducer, initialState); before
 
     const setConversationAndJoinRoom = (conversation) => {
         console.log("setConversationAndJoinRoom 1 ", conversation);
