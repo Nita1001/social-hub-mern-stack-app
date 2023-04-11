@@ -3,7 +3,7 @@ import axios from 'axios';
 export const getConversation = async (conversationId) => {
     try {
         const response = await axios.get(`/api/conversations/${conversationId}`);
-        console.log('4 conversation GET', response);
+        console.log('getConversation res', response);
         return response.data;
     } catch (error) {
         console.log('error', error);
@@ -12,9 +12,8 @@ export const getConversation = async (conversationId) => {
 
 export const getUsersConversation = async (userAId, userBId) => {
     try {
-        console.log('userAId, userBId', userAId, userBId);
         const response = await axios.get(`/api/conversations/${userAId}/${userBId}`);
-        console.log('44 conversation GET', response);
+        console.log('getUsersConversation res', response);
         return response.data;
     } catch (error) {
         console.log('error', error);
@@ -25,7 +24,7 @@ export const getUsersConversation = async (userAId, userBId) => {
 export const createNewConversation = async (currentUserId, selectedUserId) => {
     try {
         const response = await axios.post(`/api/conversations`, { userAId: currentUserId, userBId: selectedUserId });
-        console.log('5 conversation POST', response);
+        console.log('createNewConversation res', response);
         return response.data;
     } catch (error) {
         console.log('error', error);
