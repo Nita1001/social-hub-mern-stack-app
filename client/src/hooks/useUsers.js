@@ -25,10 +25,10 @@ const useUsers = () => {
 
     return {
         selectedUser: state.selectedUser,
-         ,
+        currentUser,
         currentUserData,
         handleUserSelected
-}
+    }
 }
 
 export default useUsers
