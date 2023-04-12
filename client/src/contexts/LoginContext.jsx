@@ -24,7 +24,10 @@ const LoginProvider = ({ children }) => {
             const user = response.user;
             setIsLoggedIn(true);
             setUserId(user._id);
-            setUserData({ username: user.username, phone: user.phone });
+            setUserData({
+                username: user.username,
+                conversations: user.conversations,
+            });
             return response;
         } catch (error) {
             console.error(error);
