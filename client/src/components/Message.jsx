@@ -9,7 +9,7 @@ const Message = ({ message, sentByCurrUser }) => {
     return (
         <div className={messageClassName}>
             <div className="message-content">
-                <div className="text">{message.text}</div>
+                <div className="text">{message.content}</div>
             </div>
         </div>
     );
