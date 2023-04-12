@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { LoginContext } from "../contexts/LoginContext.jsx";
 import { getUsers } from "../api/userServices.js";
+import useUsers from "../hooks/useUsers.js";
 import "./styles/usersList.style.css";
 
-const UsersList = ({ handleUserSelected }) => {
+const UsersList = () => {
     const [users, setUsers] = useState([]);
-    const { userId, userData } = useContext(LoginContext);
+    const { userId } = useContext(LoginContext);
+    const { handleUserSelected } = useUsers();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -19,6 +21,9 @@ const UsersList = ({ handleUserSelected }) => {
         fetchUsers();
     }, []);
 
+    const handleClick = (user) => {
+        handleUserSelected(user);
+    };
     return (
         <div>
             <h2>Users List</h2>
@@ -27,7 +32,7 @@ const UsersList = ({ handleUserSelected }) => {
                     <li
                         className="li-container"
                         key={user._id}
-                        onClick={() => handleUserSelected(user)}
+                        onClick={() => handleClick(user)}
                     >
                         {user.username}
                     </li>
