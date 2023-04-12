@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Login, Register, Profile, NotFound, Home } from "./pages";
+import { Login, Register, Profile, NotFound, Home, Messages } from "./pages";
 import SharedLayout from "./components/layout/SharedLayout";
 
 import "./App.css";
@@ -12,6 +12,7 @@ function App() {
                     <Route index element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/messages" element={<Messages />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
