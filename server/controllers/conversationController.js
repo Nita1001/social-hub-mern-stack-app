@@ -14,7 +14,6 @@ exports.getConversations = async (req, res) => {
 exports.getUsersConversation = async (req, res) => {
     const userAId = req.params.userAId;
     const userBId = req.params.userBId;
-    console.log('userAId and userBId', userAId, userBId);
     try {
         const conversation = await Conversation.findOne({
             users: { $all: [userAId, userBId] },
@@ -36,6 +35,18 @@ exports.getConversationByUserId = async (req, res) => {
     }
 };
 
+
+// Get conversation by Id
+exports.getConversationById = async (req, res) => {
+    try {
+        const conversationId = req.params.conversationId;
+        const conversations = await Conversation.findById(conversationId);
+        res.status(200).json(conversations);
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to get conversation by ID' });
+    }
+};
+
 // Create new conversation
 exports.createConversation = async (req, res) => {
     try {
@@ -46,9 +57,6 @@ exports.createConversation = async (req, res) => {
         const savedConversation = await conversation.save();
         await updateUsersConversations(userAId, { $push: { conversations: savedConversation } });
         await updateUsersConversations(userBId, { $push: { conversations: savedConversation } });
-        // console.log('889299992893218908301', updatedUserAConversations);
-        // console.log('889299992893218908301', updatedUserBConversations);
-
         res.status(201).json(savedConversation);
     } catch (err) {
         console.error(err);
