@@ -20,7 +20,7 @@ const init = (server) => {
             console.log("New message received: ", message);
 
             // Create the message using the message controller
-            console.log('MESSAGE 111', message);
+            console.log('socket.js |server| Message', message);
             const createdMessage = await createMessage(message);
             console.log('createdMessage', createdMessage);
             // Send message to all connected clients
