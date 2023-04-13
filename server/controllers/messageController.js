@@ -45,3 +45,14 @@ exports.getMessages = async (req, res) => {
         res.status(500).json({ message: 'Server Error, did not get message' });
     }
 }
+
+
+exports.getMessageById = async (req, res) => {
+    try {
+        const message = await Message.findById(req.params.messageId);
+        res.status(200).json({ message: message });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'server Error getting messages By Id' })
+    }
+}
