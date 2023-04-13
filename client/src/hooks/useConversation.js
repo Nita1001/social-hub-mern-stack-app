@@ -1,5 +1,4 @@
 import { useEffect, useReducer, useMemo, useContext, useCallback } from 'react';
-
 import { socket } from "../events/socket.js";
 import { LoginContext } from '../contexts/LoginContext.jsx';
 import { SelectedUserContext } from '../contexts/SelectedUserContext.jsx';
@@ -34,7 +33,7 @@ const useConversation = () => {
     //     error,
     //   } = conversationState;
 
-    const setConversationAndJoinRoom = (conversation) => {
+    const setConversationAndJoinRoom = useCallback((conversation) => {
         if (conversation) {
             conversationDispatch({
                 type: conversationActions.SET_SELECTED_CONVERSATION,
@@ -44,8 +43,8 @@ const useConversation = () => {
         } else {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: 'error' });
         }
-    };
-    const getAllMessagesByIds = async (messageIds) => {
+    }, []);
+    const getAllMessagesByIds = useCallback(async (messageIds) => {
         const messages = [];
         for (const messageId of messageIds) {
             try {
@@ -56,7 +55,7 @@ const useConversation = () => {
             }
         }
         return messages;
-    };
+    }, []);
 
     const handleMessage = useCallback((message) => {
         conversationDispatch({
