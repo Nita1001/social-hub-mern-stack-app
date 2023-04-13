@@ -16,15 +16,11 @@ exports.createMessage = async (body) => {
             content,
             conversationId
         });
-
         const savedMessage = await thisMessage.save();
-        console.log('11111111111111111', savedMessage, body);
         const conversationUpdate = { $push: { messages: savedMessage.id } };
 
         const updatedConversation = await updateMessages(conversationId, conversationUpdate);
         const updatedMessages = updatedConversation.messages;
-        console.log('updatedMessages', updatedMessages);
-
         return {
             message: 'Message sent successfully',
             from,
@@ -46,6 +42,6 @@ exports.getMessages = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: 'Server Error, did not g et m essa m ge ' });
+        res.status(500).json({ message: 'Server Error, did not get message' });
     }
 }
