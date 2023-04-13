@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const getConversation = async (conversationId) => {
     try {
-        const response = await axios.get(`/api/conversations/${conversationId}`);
+        const response = await axios.get(`/api/conversations/users/${conversationId}`);
         console.log('getConversation res', response);
         return response.data;
     } catch (error) {
