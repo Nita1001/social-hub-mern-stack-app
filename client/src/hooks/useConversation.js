@@ -1,5 +1,9 @@
-import { useEffect, useReducer, useMemo, useContext } from 'react';
+import { useEffect, useReducer, useMemo, useContext, useCallback } from 'react';
+
 import { socket } from "../events/socket.js";
+import { LoginContext } from '../contexts/LoginContext.jsx';
+import { SelectedUserContext } from '../contexts/SelectedUserContext.jsx';
+
 import conversationReducer from "../reducers/conversationReducer.js";
 import { conversationActions } from '../constants/conversationActions.js';
 import {
@@ -7,17 +11,13 @@ import {
     getUsersConversation,
     getConversation,
 } from "../api/conversationServices.js";
-import { SelectedUserContext } from '../contexts/SelectedUserContext.jsx';
-import { LoginContext } from '../contexts/LoginContext.jsx';
+import { getMessageById } from '../api/messageServices.js';
 
 
 const useConversation = () => {
 
     const { selectedUser } = useContext(SelectedUserContext);
-    console.log('selectedUser context', selectedUser);
-    // debugger
     const { userId: currentUser } = useContext(LoginContext);
-    // console.log('currentUser', currentUser);
     const [conversationState, conversationDispatch] = useReducer(conversationReducer, {
         conversations: [],
         selectedConversation: null,
@@ -25,6 +25,14 @@ const useConversation = () => {
         inputValue: "",
         error: null,
     });
+
+    // const {
+    //     conversations,
+    //     selectedConversation,
+    //     messages,
+    //     inputValue,
+    //     error,
+    //   } = conversationState;
 
     const setConversationAndJoinRoom = (conversation) => {
         if (conversation) {
@@ -37,126 +45,115 @@ const useConversation = () => {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: 'error' });
         }
     };
+    const getAllMessagesByIds = async (messageIds) => {
+        const messages = [];
+        for (const messageId of messageIds) {
+            try {
+                const response = await getMessageById(messageId);
+                messages.push(response);
+            } catch (error) {
+                console.log(`Error getting message with ID ${messageId}: ${error}`);
+            }
+        }
+        return messages;
+    };
 
-    const handleMessage = (message) => {
+    const handleMessage = useCallback((message) => {
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
             payload: message
         });
-    };
+        console.log('handleMessage | message', message);
+    }, []);
 
-    const fetchConversation = async () => {
-        try {
-            console.log('currentUser and selectedUser Id 444', currentUser,
-                selectedUser._id);
-            const existingConversation = await getUsersConversation(
-                currentUser,
-                selectedUser._id
-            );
+    useEffect(() => {
+        if (!selectedUser._id) return;
 
-            if (existingConversation) {
-                console.log('Existing conversation', existingConversation)
-                setConversationAndJoinRoom(existingConversation);
-                console.log('Existing conversation ID', existingConversation._id)
-
-                const response = await getConversation(existingConversation._id);
-                console.log('Existing conversation | response', response)
-
-                if (response) {
-                    conversationDispatch({
-                        type: conversationActions.SET_MESSAGES,
-                        payload: response.messages,
-                    });
-                    console.log('response true response.messages', response.messages);
-                    // debugger
-                }
-                console.log("useEffect getConversation res", response);
-            } else {
-                const newConversation = await createNewConversation(
+        const fetchConversation = async () => {
+            try {
+                const existingConversation = await getUsersConversation(
                     currentUser,
                     selectedUser._id
                 );
-                console.log(
-                    "useEffect newConversation res",
-                    newConversation
-                );
-                setConversationAndJoinRoom(newConversation);
-                conversationDispatch({
-                    type: conversationActions.SET_CONVERSATIONS,
-                    payload: newConversation,
-                });
-                console.log('newConversation 444', newConversation);
+
+                if (existingConversation) {
+                    setConversationAndJoinRoom(existingConversation);
+                    console.log('Existing conversation ID', existingConversation._id)
+
+                    const response = await getConversation(existingConversation._id);
+
+                    if (response) {
+                        const messages = response.messages;
+                        const allMessages = await getAllMessagesByIds(messages);
+                        console.log('All messages', allMessages);
+                        // debugger;
+
+                        conversationDispatch({
+                            type: conversationActions.SET_MESSAGES,
+                            payload: allMessages,
+                        });
+                        // debugger
+                        // Set up socket event listener for new messages
+                        socket.off('message', handleMessage); // remove existing event listener
+                        socket.on('message', handleMessage); // add new event listener
+                    }
+                    // console.log("useEffect getConversation res", response);
+                } else {
+                    const newConversation = await createNewConversation(
+                        currentUser,
+                        selectedUser._id
+                    );
+                    console.log("useEffect | newConversation res", newConversation);
+                    setConversationAndJoinRoom(newConversation);
+                    conversationDispatch({
+                        type: conversationActions.SET_CONVERSATIONS,
+                        payload: newConversation,
+                    });
+                    console.log('newConversation', newConversation);
+                    // Set up socket event listener for new messages
+                    socket.off('message', handleMessage); // remove existing event listener
+                    socket.on('message', handleMessage); // add new event listener
+
+                }
+            } catch (error) {
+                console.error(error);
+                conversationDispatch({ type: conversationActions.SET_ERROR, payload: error });
             }
-        } catch (error) {
-            console.error(err);
-            conversationDispatch({ type: conversationActions.SET_ERROR, payload: error });
-        }
-    };
-
-    useEffect(() => {
-        if (!selectedUser._id) {
-            console.error('Selected user not found');
-            return;
-        }
-
+        };
         fetchConversation();
     }, [selectedUser._id, currentUser]);
-
-    useEffect(() => {
-        if (!socket) return;
-
-        socket.on('message', handleMessage);
-
-        return () => {
-            socket.off('message', handleMessage);
-        };
-    }, [socket]);
 
     const sendMessage = async (message) => {
         if (!message.trim() || !conversationState.selectedConversation) {
             return; // Do nothing if message is empty or only whitespace
-            debugger
         }
         // new message object
         console.log(' conversationState.selectedConversation', conversationState.selectedConversation)
         const newMessage = {
-            conversationId: conversationState.selectedConversation._id,
-            from: currentUser,
-            to: selectedUser._id,
-            content: message,
+            message: {
+                conversationId: conversationState.selectedConversation._id,
+                from: currentUser,
+                to: selectedUser._id,
+                content: message,
+            }
         };
-        // Sending new message to server
-        socket.emit("message", newMessage);
-        console.log('sendMessage | newMessage', newMessage);
         // Adding the new message to messages array
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
             payload: newMessage,
         });
+        // Sending new message to server
+        socket.emit("message", newMessage.message);
+        console.log('sendMessage | newMessage', newMessage);
+        // debugger
     };
 
     const filteredMessages = useMemo(() => {
-        // debugger
         if (!selectedUser._id || !conversationState.selectedConversation) {
-            console.log('0000');
             return [];
         }
-        console.log("filteredMessages | conversationState.selectedConversation", conversationState.selectedConversation); // messages is array of ids
-        if (conversationState.selectedConversation.messages) {
-            const messages = conversationState.selectedConversation.messages;
-            console.log('messages are:', messages);
-
-            return messages.filter(
-                (message) =>
-                    (message.from === currentUser &&
-                        message.to === selectedUser._id) ||
-                    (message.from === selectedUser._id &&
-                        message.to === currentUser)
-            );
-        } else {
-            console.log('conversation.messages', conversationState.messages)
-            // debugger
-        }
+        console.log('filteredMessages | conversationState.messages', conversationState.messages);
+        return conversationState.messages || [];
     }, [selectedUser._id, conversationState.selectedConversation, conversationState.messages]);
 
     const setInputValue = (value) => {
