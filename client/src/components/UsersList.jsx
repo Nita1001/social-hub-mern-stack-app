@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { LoginContext } from "../contexts/LoginContext.jsx";
 import { getUsers } from "../api/userServices.js";
-import useUsers from "../hooks/useUsers.js";
 import "./styles/usersList.style.css";
+import { SelectedUserContext } from "../contexts/SelectedUserContext.jsx";
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
     const { userId } = useContext(LoginContext);
-    const { handleUserSelected } = useUsers();
+    const { handleUserSelected } = useContext(SelectedUserContext);
 
     useEffect(() => {
         const fetchUsers = async () => {
