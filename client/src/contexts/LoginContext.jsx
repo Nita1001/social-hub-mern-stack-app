@@ -1,22 +1,37 @@
 import { useState, createContext, useEffect } from "react";
 import { loginUser } from "../api/userServices";
 
-const LoginContext = createContext({
+const defaultLoginContext = {
     isLoggedIn: false,
+    userId: "",
     login: () => {},
     logout: () => {},
-});
+    userData: {},
+};
+
+const LoginContext = createContext(defaultLoginContext);
 
 const LoginProvider = ({ children }) => {
     const [userData, setUserData] = useState({});
-    const [userId, setUserId] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(
-        JSON.parse(localStorage.getItem("isLoggedIn")) || false
+        () => JSON.parse(localStorage.getItem("isLoggedIn")) || false
     );
+    const [userId, setUserId] = useState(() => {
+        const savedUserId = JSON.parse(localStorage.getItem("userId"));
+        return savedUserId || "";
+    });
+
+    // useEffect(() => {
+    //     const savedUserId = JSON.parse(localStorage.getItem("userId"));
+    //     if (savedUserId) {
+    //         setUserId(savedUserId);
+    //     }
+    // }, [isLoggedIn]);
 
     useEffect(() => {
         localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
-    }, [isLoggedIn]);
+        localStorage.setItem("userId", JSON.stringify(userId));
+    }, [isLoggedIn, userId]);
 
     const login = async (email, password) => {
         try {
@@ -35,7 +50,13 @@ const LoginProvider = ({ children }) => {
         }
     };
 
-    const logout = () => setIsLoggedIn(false);
+    const logout = () => {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userId");
+        setIsLoggedIn(false);
+        setUserData({});
+        setUserId("");
+    };
 
     return (
         <LoginContext.Provider
