@@ -1,29 +1,31 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { SelectedUserContext } from "../contexts/SelectedUserContext";
+import React, { useCallback, useContext } from "react";
+
 import useConversation from "../hooks/useConversation.js";
-import UsersList from "./UsersList.jsx";
 import ConversationBox from "./ConversationBox.jsx";
-
+import { SelectedUserContext } from "../contexts/SelectedUserContext.jsx";
+import useInput from "../hooks/useMessageInput.js";
 import "./styles/conversation.style.css";
-const Conversation = () => {
-    const { inputValue, setInputValue, sendMessage } = useConversation();
-    const { selectedUser } = useContext(SelectedUserContext);
 
-    const handleInputChange = useCallback(
-        (event) => {
-            setInputValue(event.target.value);
-        },
-        [setInputValue]
-    );
+const Conversation = () => {
+    const { sendMessage, filteredMessages, currentUser } = useConversation();
+    const { selectedUser } = useContext(SelectedUserContext);
+    const [inputValue, handleInputChange, resetInput] = useInput("");
+
     const handleSendMessage = useCallback(() => {
         sendMessage(inputValue);
-        setInputValue("");
-    }, [sendMessage, inputValue, setInputValue]);
+        resetInput();
+    }, [sendMessage, inputValue, resetInput]);
 
     return (
         <div className="conversation-container">
-            <UsersList />
-            {selectedUser ? <ConversationBox /> : <div>Select a user</div>}
+            {selectedUser ? (
+                <ConversationBox
+                    filteredMessages={filteredMessages}
+                    currentUser={currentUser}
+                />
+            ) : (
+                <div>Select a user</div>
+            )}
             {selectedUser ? (
                 <div className="conversation-input">
                     <input
