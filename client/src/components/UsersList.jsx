@@ -17,7 +17,6 @@ const UsersList = () => {
             const users = response.filter((user) => user._id !== userId);
             setUsers(users);
         };
-        console.log("rendered 1");
         fetchUsers();
     }, [userId]);
 
