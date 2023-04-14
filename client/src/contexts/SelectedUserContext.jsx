@@ -14,7 +14,11 @@ const SelectedUserProvider = ({ children }) => {
             type: SET_SELECTED_USER,
             payload: user,
         });
-        console.log("selectedUser.username", user.username);
+        const selectedUserData = { _id: user._id, username: user.username };
+        localStorage.setItem(
+            "selectedUserData",
+            JSON.stringify(selectedUserData)
+        );
     };
 
     return (

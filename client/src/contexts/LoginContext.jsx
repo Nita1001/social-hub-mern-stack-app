@@ -12,7 +12,9 @@ const defaultLoginContext = {
 const LoginContext = createContext(defaultLoginContext);
 
 const LoginProvider = ({ children }) => {
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState(
+        () => JSON.parse(localStorage.getItem("userData")) || {}
+    );
     const [isLoggedIn, setIsLoggedIn] = useState(
         () => JSON.parse(localStorage.getItem("isLoggedIn")) || false
     );
@@ -21,17 +23,11 @@ const LoginProvider = ({ children }) => {
         return savedUserId || "";
     });
 
-    // useEffect(() => {
-    //     const savedUserId = JSON.parse(localStorage.getItem("userId"));
-    //     if (savedUserId) {
-    //         setUserId(savedUserId);
-    //     }
-    // }, [isLoggedIn]);
-
     useEffect(() => {
         localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
         localStorage.setItem("userId", JSON.stringify(userId));
-    }, [isLoggedIn, userId]);
+        localStorage.setItem("userData", JSON.stringify(userData));
+    }, [isLoggedIn, userId, userData]);
 
     const login = async (email, password) => {
         try {
@@ -53,6 +49,7 @@ const LoginProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("userId");
+        localStorage.removeItem("selectedUserData");
         setIsLoggedIn(false);
         setUserData({});
         setUserId("");
