@@ -1,5 +1,6 @@
-import { useState, createContext, useEffect } from "react";
+import { useState, createContext, useEffect, useContext } from "react";
 import { loginUser } from "../api/userServices";
+import { SelectedUserContext } from "./SelectedUserContext";
 
 const defaultLoginContext = {
     isLoggedIn: false,
@@ -22,6 +23,7 @@ const LoginProvider = ({ children }) => {
         const savedUserId = JSON.parse(localStorage.getItem("userId"));
         return savedUserId || "";
     });
+    const { clearSelectedUser } = useContext(SelectedUserContext);
 
     useEffect(() => {
         localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
@@ -51,6 +53,7 @@ const LoginProvider = ({ children }) => {
         localStorage.removeItem("userId");
         localStorage.removeItem("selectedUserData");
         setIsLoggedIn(false);
+        clearSelectedUser();
         setUserData({});
         setUserId("");
     };

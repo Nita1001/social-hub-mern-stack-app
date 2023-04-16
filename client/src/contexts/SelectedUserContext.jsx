@@ -2,8 +2,9 @@ import React, { createContext, useReducer } from "react";
 import usersReducer from "../reducers/usersReducer.js";
 
 const SET_SELECTED_USER = "SET_SELECTED_USER";
+const CLEAR_SELECTED_USER = "CLEAR_SELECTED_USER";
 
-const SelectedUserContext = React.createContext({ selectedUser: {} });
+const SelectedUserContext = createContext({ selectedUser: {} });
 
 const SelectedUserProvider = ({ children }) => {
     const initialState = { selectedUser: {} };
@@ -21,9 +22,19 @@ const SelectedUserProvider = ({ children }) => {
         );
     };
 
+    const clearSelectedUser = () => {
+        console.log("cleared", state.selectedUser);
+        dispatch({ type: CLEAR_SELECTED_USER });
+        localStorage.setItem("selectedUserData", JSON.stringify(NULL));
+    };
+
     return (
         <SelectedUserContext.Provider
-            value={{ selectedUser: state.selectedUser, handleUserSelected }}
+            value={{
+                selectedUser: state.selectedUser,
+                handleUserSelected,
+                clearSelectedUser,
+            }}
         >
             {children}
         </SelectedUserContext.Provider>
