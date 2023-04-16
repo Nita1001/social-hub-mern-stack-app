@@ -14,8 +14,7 @@ const server = http.createServer(app);
 dotenv.config({ path: './config/config.env' });
 
 // Serve static files from the client's build directory
-// app.use("/", express.static("client/dist"));
-app.use(express.static(path.join(__dirname, "client/dist")));
+app.use("/", express.static("../client/dist"));
 
 // Parse request body
 app.use(express.json());
