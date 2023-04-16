@@ -21,7 +21,7 @@ const LoggedInSidebar = () => {
                 </Link>
             </li>
             <li className="sidebar-menu-items">
-                <Link to="/inventory" className="sidebar-menu-link">
+                <Link to="/storage" className="sidebar-menu-link">
                     <i className="fa-solid fa-box-archive"></i>
                     {/* <div className="shield"></div> */}
                     <span className="sidebar-menu-text">Inventory</span>
