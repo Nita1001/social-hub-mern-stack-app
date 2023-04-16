@@ -35,6 +35,8 @@ app.use(errorHandler);
 // Connect to MongoDB before listening 
 (async () => {
     try {
+        console.log(`process.env.CONNECTION_STRING: ${process.env.CONNECTION_STRING}`);
+
         await connectDb();
 
         init(server);
