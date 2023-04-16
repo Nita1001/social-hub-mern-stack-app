@@ -1,0 +1,22 @@
+# name: social-hub-mern-stack-app
+# buildCommand: |
+#     cd client && npm install && npm run build
+#     cd ../server && npm install && npm run build
+# startCommand: npm run start
+version: 1
+build:
+    steps:
+        - name: Install Dependencies
+          command: |
+              cd server
+              npm install
+              cd ../client
+              npm install
+        - name: Build Client
+          command: |
+              cd client
+              npm run build
+        - name: Start Server
+          command: |
+              cd ../server
+              npm start
