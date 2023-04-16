@@ -4,12 +4,15 @@ import App from "./App";
 import "./index.css";
 import { LoginProvider } from "./contexts/LoginContext";
 import { SelectedUserProvider } from "./contexts/SelectedUserContext";
+import DarkModeProvider from "./contexts/DarkModeContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <LoginProvider>
             <SelectedUserProvider>
-                <App />
+                <DarkModeProvider>
+                    <App />
+                </DarkModeProvider>
             </SelectedUserProvider>
         </LoginProvider>
     </React.StrictMode>
