@@ -59,6 +59,20 @@
     /* background-color: #1f2d16; */
 }
 
+.time {
+    font-size: 10px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #000;
+}
+
+.sent-time {
+    align-self: flex-end;
+}
+.received-time {
+    align-self: flex-start;
+}
+
 .message-content {
     display: flex;
 }
@@ -68,7 +82,7 @@
     display: none;
 } */
 .conversation-box::-webkit-scrollbar {
-    width: 0.3rem;
+    width: 0.2rem;
 }
 
 .conversation-box::-webkit-scrollbar-track {
@@ -82,4 +96,11 @@
 
 .conversation-box::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* Dark Mode */
+
+.darkMode {
+    color: white;
+    background-color: #0706069a;
 }
