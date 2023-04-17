@@ -1,55 +1,58 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+
+import TradingBox from "./TradingBox";
+import { InventoryContext } from "../contexts/InventoryContext";
+
 import "./styles/Inventory.style.css";
 
 const Inventory = () => {
-    const [items, setItems] = useState([
-        { id: 1, name: "Item", description: "1" },
-        { id: 2, name: "Item", description: "2" },
-        { id: 3, name: "Item", description: "3" },
-    ]);
+    const inventory = useContext(InventoryContext);
 
-    const [favoriteItems, setFavoriteItems] = useState([]);
-
-    const handleFavorite = (itemId) => {
-        const itemToAdd = items.find((item) => item.id === itemId);
-        if (!favoriteItems.find((item) => item.id === itemId)) {
-            setFavoriteItems([...favoriteItems, itemToAdd]);
-        }
-    };
-
-    const handleRemoveFavorite = (itemId) => {
-        const filteredItems = favoriteItems.filter(
-            (item) => item.id !== itemId
-        );
-        setFavoriteItems(filteredItems);
-    };
+    const {
+        users,
+        items,
+        selectedUser,
+        handleSelectUser,
+        handleAddToTrading,
+    } = inventory;
 
     return (
-        <div className="inventory-container">
-            <h2>Inventory</h2>
-            <div className="items-container">
-                {items.map((item) => (
-                    <div key={item.id} className="item">
-                        <h3>{item.name}</h3>
-                        <p>{item.description}</p>
-                        <button onClick={() => handleFavorite(item.id)}>
-                            <i className="fa-solid fa-bolt-lightning"></i>
-                        </button>
-                    </div>
+        <div>
+            <div className="inventory-container">
+                <h2>Inventory</h2>
+                <div className="items-container">
+                    {items.map((item) => (
+                        <div key={item.id} className="item">
+                            <h3>{item.name}</h3>
+                            <p>{item.description}</p>
+                            {item.status === "trade" && (
+                                <button
+                                    onClick={() => handleAddToTrading(item.id)}
+                                >
+                                    <i className="fa-solid fa-bolt-lightning"></i>
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className="users-container">
+                <h3>Select a user:</h3>
+                {users.map((user) => (
+                    <button
+                        key={user.id}
+                        onClick={() => handleSelectUser(user)}
+                        className={
+                            selectedUser && selectedUser.id === user.id
+                                ? "active"
+                                : ""
+                        }
+                    >
+                        {user.name}
+                    </button>
                 ))}
             </div>
-            <h2>Favorites</h2>
-            <div className="favorite-items-container">
-                {favoriteItems.map((item) => (
-                    <div key={item.id} className="favorite-item">
-                        <h3>{item.name}</h3>
-                        <p>{item.description}</p>
-                        <button onClick={() => handleRemoveFavorite(item.id)}>
-                            <i className="fa-solid fa-heart"></i>
-                        </button>
-                    </div>
-                ))}
-            </div>
+            {selectedUser && <TradingBox />}
         </div>
     );
 };
