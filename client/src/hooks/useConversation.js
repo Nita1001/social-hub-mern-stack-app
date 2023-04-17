@@ -12,11 +12,10 @@ import {
 } from "../api/conversationServices.js";
 import { getMessageById } from '../api/messageServices.js';
 
-
 const useConversation = () => {
-
     const { selectedUser } = useContext(SelectedUserContext);
     const { userId: currentUser } = useContext(LoginContext);
+
     const [conversationState, conversationDispatch] = useReducer(conversationReducer, {
         conversations: [],
         selectedConversation: null,
@@ -55,7 +54,7 @@ const useConversation = () => {
             type: conversationActions.ADD_MESSAGE,
             payload: message
         });
-        console.log('handleMessage | message', message);
+
         return message;
     }, []);
 
@@ -67,16 +66,13 @@ const useConversation = () => {
             );
 
             if (existingConversation) {
-                setConversationAndJoinRoom(existingConversation);
-                console.log('Existing conversation ID', existingConversation._id)
 
+                setConversationAndJoinRoom(existingConversation);
                 const response = await getConversation(existingConversation._id);
 
                 if (response) {
                     const messages = response.messages;
                     const allMessages = await getAllMessagesByIds(messages);
-                    console.log('All messages', allMessages);
-                    // debugger;
 
                     conversationDispatch({
                         type: conversationActions.SET_MESSAGES,
@@ -85,21 +81,17 @@ const useConversation = () => {
                     // Set up socket event listener for new messages
                     socket.off('message', handleMessage); // remove existing event listener
                     socket.on('message', handleMessage); // add new event listener
-                    // debugger
                 }
-                // console.log("useEffect getConversation res", response);
             } else {
                 const newConversation = await createNewConversation(
                     currentUser,
                     selectedUser._id
                 );
-                console.log("useEffect | newConversation res", newConversation);
                 setConversationAndJoinRoom(newConversation);
                 conversationDispatch({
                     type: conversationActions.SET_CONVERSATIONS,
                     payload: newConversation,
                 });
-                console.log('newConversation', newConversation);
                 // Set up socket event listener for new messages
                 socket.off('message', handleMessage); // remove existing event listener
                 socket.on('message', handleMessage); // add new event listener
@@ -109,7 +101,6 @@ const useConversation = () => {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: error });
         }
     };
-
 
     useEffect(() => {
         if (!selectedUser._id) return;
@@ -121,18 +112,17 @@ const useConversation = () => {
             return; // Do nothing if message is empty or only whitespace
         }
         // new message object
-        console.log(' conversationState.selectedConversation', selectedConversation)
         const newMessage = {
             message: {
                 conversationId: selectedConversation._id,
                 from: currentUser,
                 to: selectedUser._id,
                 content: message,
+                updatedAt: new Date().toISOString()
             }
         };
         // Sending new message to server
         socket.emit("message", newMessage.message);
-        console.log('sendMessage | newMessage', newMessage);
 
         // Adding the new message to messages array
         conversationDispatch({
@@ -145,7 +135,6 @@ const useConversation = () => {
         if (!selectedUser._id || !selectedConversation) {
             return [];
         }
-        console.log('filteredMessages | conversationState.messages', messages);
         return messages || [];
     }, [selectedUser._id, selectedConversation, messages]);
 
