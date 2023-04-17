@@ -5,12 +5,16 @@ import { LoginContext } from "../contexts/LoginContext.jsx";
 import { SelectedUserContext } from "../contexts/SelectedUserContext.jsx";
 
 import "./styles/usersList.style.css";
+import {
+    InventoryContext,
+    useInventoryContext,
+} from "../contexts/InventoryContext.jsx";
 
-const UsersList = () => {
+const UsersList = ({ type }) => {
     const [users, setUsers] = useState([]);
     const { userId } = useContext(LoginContext);
     const { handleUserSelected } = useContext(SelectedUserContext);
-
+    const { handleSelectUser } = useInventoryContext(InventoryContext);
     useEffect(() => {
         const fetchUsers = async () => {
             const response = await getUsers();
@@ -21,7 +25,11 @@ const UsersList = () => {
     }, [userId]);
 
     const handleClick = (user) => {
+        if (type === "trading") {
+            handleSelectUser(user);
+        }
         handleUserSelected(user);
+        console.log("user selected is", user);
     };
     return (
         <div>
