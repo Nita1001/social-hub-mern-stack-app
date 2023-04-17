@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { items1 } from "../components/items";
 import { users } from "../components/users";
-
+import { getItems, getItem } from '../api/InventoryServices';
 const useInventory = () => {
     const [items, setItems] = useState(items1);
     const [tradingItems, setTradingItems] = useState([]);
@@ -9,7 +9,7 @@ const useInventory = () => {
     const [selectedTradingItem, setSelectedTradingItem] = useState(null);
     const [selectedOfferItem, setSelectedOfferItem] = useState([]);
     const [userTradingItems, setUserTradingItems] = useState([]);
-    const [isConfirmed, setIsConfirmed] = useState(true);
+    const [isConfirmed, setIsConfirmed] = useState(false);
 
     useEffect(() => {
         // Filter out the item with status trade of the selected user
@@ -38,16 +38,26 @@ const useInventory = () => {
         );
     };
 
+    const getItemsOfSelectedUser = async (inventoryId) => {
+        const itemIdsObject = await getItems(inventoryId);
+        const itemIds = itemIdsObject.items;
+        console.log('itemIds:', itemIds);
+        const items = await Promise.all(itemIds.map(async (itemId) => {
+            const item = await getItem(itemId);
+            return item;
+        }));
+        console.log('items:', items);
+    }
+
     const handleSelectUser = (user) => {
-        setSelectedUser(user);
+        console.log('user', user);
+        const { firstName, lastName, inventoryId } = user;
+        console.log('firstName, lastName, inventoryId', firstName, lastName, inventoryId)
+        getItemsOfSelectedUser(inventoryId);
+        // setSelectedUser(user);
     };
 
     const handleOfferItem = (selectedItem) => {
-
-        console.log('selectedOfferItem', selectedOfferItem);
-        console.log('selectedItem', selectedItem);
-        console.log('items', items);
-        //debugger
         const isItemAlreadySelected = selectedOfferItem?.some(
             (item) => item.id === selectedItem.id
         );
@@ -59,6 +69,7 @@ const useInventory = () => {
     };
 
     const handleCancelTrade = () => {
+        setIsConfirmed(false);
         setSelectedOfferItem([]);
         setTradingItems([]);
     };
@@ -66,14 +77,13 @@ const useInventory = () => {
     const handleConfirmTrade = () => {
         setSelectedTradingItem([]);
         setSelectedOfferItem([]);
+        setIsConfirmed(true);
+        // if (selectedOfferItem.length > 0 && selectedTradingItem.length > 0) {
+        //     setIsConfirmed(true);
+        //     setTradingItems([...selectedOfferItem, ...selectedTradingItem]);
+        // }
     };
 
-    const handleConfirm = () => {
-        if (selectedOfferItem.length > 0 && selectedTradingItem.length > 0) {
-            setIsConfirmed(true);
-            setTradingItems([...selectedOfferItem, ...selectedTradingItem]);
-        }
-    };
     const handleCompleteTrade = () => {
         console.log("TRADE COMPLETED !");
 
@@ -129,10 +139,9 @@ const useInventory = () => {
         handleRemoveItemFromTradingBox,
         handleTradingItem,
         handleCompleteTrade,
-        handleConfirm,
         handleConfirmTrade,
         handleCancelTrade,
-        handleOfferItem
+        handleOfferItem,
     };
 };
 
