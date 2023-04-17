@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import TradingBox from "./TradingBox";
 import { InventoryContext } from "../contexts/InventoryContext";
-
+import UsersList from "./UsersList";
 import "./styles/Inventory.style.css";
 
 const Inventory = () => {
@@ -19,7 +19,7 @@ const Inventory = () => {
     return (
         <div>
             <div className="inventory-container">
-                <h2>Inventory</h2>
+                <h2>My Inventory</h2>
                 <div className="items-container">
                     {items.map((item) => (
                         <div key={item.id} className="item">
@@ -38,7 +38,7 @@ const Inventory = () => {
             </div>
             <div className="users-container">
                 <h3>Select a user:</h3>
-                {users.map((user) => (
+                {/* {users.map((user) => (
                     <button
                         key={user.id}
                         onClick={() => handleSelectUser(user)}
@@ -50,7 +50,8 @@ const Inventory = () => {
                     >
                         {user.name}
                     </button>
-                ))}
+                ))} */}
+                <UsersList type="trading" />
             </div>
             {selectedUser && <TradingBox />}
         </div>
