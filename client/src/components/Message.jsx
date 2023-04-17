@@ -10,9 +10,10 @@ const Message = ({ message, sentByCurrUser }) => {
         ? "time sent-time"
         : "time received-time";
     const sentOrReceived = sentByCurrUser ? "sent" : "received";
+
     const { hour, minute, amOpm } = dateFormatter(message?.updatedAt);
     const time = `${hour}:${minute} ${amOpm}`;
-    console.log("TIME", time);
+
     return (
         <>
             <div className={messageClassName}>
