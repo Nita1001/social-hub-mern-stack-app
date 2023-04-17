@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useRef } from "react";
 import uniqid from "uniqid";
 import Message from "./Message";
 import "./styles/conversation.style.css";
+import { DarkModeContext } from "../contexts/DarkModeContext";
 
 const ConversationBox = ({ filteredMessages, currentUser }) => {
     const userData = JSON.parse(localStorage.getItem("userData")) || "";
@@ -19,27 +20,39 @@ const ConversationBox = ({ filteredMessages, currentUser }) => {
         scrollToBottom();
     }, [filteredMessages]);
 
+    const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
+
+    const handleDarkMode = () => {
+        toggleDarkMode();
+    };
+
     return (
-        <div className="conversation-box" ref={conversationBoxRef}>
-            <h6>
-                {userData.username} In Conversation with{" "}
-                {selectedUserData.username}
-            </h6>
-            {filteredMessages &&
-                filteredMessages.map(
-                    (message) =>
-                        // message.message !! I should change to message
-                        message.message.from && (
-                            <Message
-                                key={uniqid()}
-                                message={message.message}
-                                sentByCurrUser={
-                                    message.message.from === currentUser
-                                }
-                            />
-                        )
-                )}
-        </div>
+        <>
+            <div
+                className={`conversation-box ${isDarkMode ? "darkMode" : ""}`}
+                ref={conversationBoxRef}
+            >
+                <h6>
+                    {userData.username} In Conversation with{" "}
+                    {selectedUserData.username}
+                </h6>
+                {filteredMessages &&
+                    filteredMessages.map(
+                        (message) =>
+                            // message.message !! I should change to message
+                            message.message.from && (
+                                <Message
+                                    key={uniqid()}
+                                    message={message.message}
+                                    sentByCurrUser={
+                                        message.message.from === currentUser
+                                    }
+                                />
+                            )
+                    )}
+            </div>
+            <button onClick={handleDarkMode}>Dark Mode</button>
+        </>
     );
 };
 
