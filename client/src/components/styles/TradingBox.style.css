@@ -61,8 +61,8 @@
 
 .offer-container {
     width: 60rem;
-    height: 1rem;
-    background-color: aqua;
+    height: 20rem;
+    background-color: rgba(77, 112, 195, 0.245);
 }
 .offer-item {
     width: 60rem;
@@ -70,5 +70,5 @@
     background-color: palevioletred;
 }
 .confirm-trade {
-    background-color: bisque;
+    background-color: rgba(52, 85, 102, 0.737);
 }
