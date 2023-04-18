@@ -8,7 +8,7 @@ const init = (server) => {
             origin: "*",
             methods: ["GET", "POST"]
         },
-        pingTimeout: 160000 // 1 minute
+        pingTimeout: 160000 // 2.40 minutes
     });
 
     // Connection event
@@ -36,6 +36,17 @@ const init = (server) => {
         socket.on("leave", (room) => {
             socket.leave(room);
             console.log(`Socket ${socket.id} left room ${room}`);
+        });
+
+        // Handle Trade offer and confirmed
+        socket.on('tradeOffer', (data) => {
+            console.log(`Trade offer received from ${socket.id}.`);
+            io.emit('tradeOffer', data);
+        });
+
+        socket.on('tradeConfirmed', () => {
+            console.log(`Trade confirmed by ${socket.id}.`);
+            io.emit('tradeConfirmed');
         });
 
         // Disconnection event
