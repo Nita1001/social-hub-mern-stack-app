@@ -5,6 +5,7 @@ const InventoryContext = createContext();
 
 const InventoryProvider = ({ children }) => {
     const inventory = useInventory();
+
     return (
         <InventoryContext.Provider value={inventory}>
             {children}
