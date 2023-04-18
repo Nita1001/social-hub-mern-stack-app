@@ -29,17 +29,19 @@ const LoginProvider = ({ children }) => {
         localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
         localStorage.setItem("userId", JSON.stringify(userId));
         localStorage.setItem("userData", JSON.stringify(userData));
-    }, [isLoggedIn, userId, userData]);
+    }, [isLoggedIn, userId]);
 
     const login = async (email, password) => {
         try {
             const response = await loginUser(email, password);
             const user = response.user;
+            console.log("user", user);
             setIsLoggedIn(true);
             setUserId(user._id);
             setUserData({
                 username: user.username,
                 conversations: user.conversations,
+                inventoryId: user.inventoryId,
             });
             return response;
         } catch (error) {
