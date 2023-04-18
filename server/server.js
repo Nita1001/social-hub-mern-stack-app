@@ -28,6 +28,7 @@ app.use('/api/inventories', require('./routes/inventories'));
 app.use('/api/inventories/items', require('./routes/items'));
 app.use('/api/conversations', require('./routes/conversations.js'));
 app.use('/api/conversations/messages', require('./routes/messages.js'));
+app.use('/api/trades', require('./routes/trades'));
 // Error handling middleware
 app.use(errorHandler);
 
