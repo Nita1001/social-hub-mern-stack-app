@@ -11,9 +11,25 @@ const init = (server) => {
         pingTimeout: 160000 // 2.40 minutes
     });
 
+    // const confirmedUsers = {};
+    let confirmedCount = 0;
+    const connectedUsers = {};
+    const pendingOffers = {};
+
     // Connection event
     io.on("connection", (socket) => {
-        console.log("Client connected: ", socket.id);
+
+        const clientId = socket.handshake.query.clientId;
+
+        console.log("Client connected: ", clientId);
+        connectedUsers[clientId] = socket;
+
+        // Check for pending trade offers
+        if (clientId in pendingOffers) {
+            const offer = pendingOffers[clientId];
+            socket.emit("tradeOffer", { senderId: offer.senderId, recipientId: clientId, offer: offer.offer });
+            delete pendingOffers[clientId];
+        }
 
         // Handle incoming message events
         socket.on("message", async (message) => {
@@ -38,20 +54,39 @@ const init = (server) => {
             console.log(`Socket ${socket.id} left room ${room}`);
         });
 
-        // Handle Trade offer and confirmed
-        socket.on('tradeOffer', (data) => {
-            console.log(`Trade offer received from ${socket.id}.`);
-            io.emit('tradeOffer', data);
+        // Handle incoming trade offer events
+        socket.on("tradeOffer", (data, callback) => {
+            console.log(`Trade offer received from ${data.senderId} offer is: ${data.offer}.`);
+            // Store the offer for the recipient
+            pendingOffers[data.recipientId] = data.offer;
+            // Check if the recipient user is connected
+            const recipientSocket = connectedUsers[data.recipientId];
+            if (recipientSocket) {
+                recipientSocket.emit("tradeOffer", data);
+                callback({ success: true, offer: data.offer }); // send a success response
+            } else {
+                // Check if the recipient user has a pending offer
+                if (data.recipientId in pendingOffers) {
+                    callback({ success: false, error: "Recipient user is not connected. Pending offer: " + pendingOffers[data.recipientId] }); // send the pending offer as an error response
+                } else {
+                    callback({ success: false, error: "Recipient user is not connected." }); // send an error response
+                }
+            }
         });
 
-        socket.on('tradeConfirmed', () => {
-            console.log(`Trade confirmed by ${socket.id}.`);
-            io.emit('tradeConfirmed');
+        socket.on("tradeConfirmed", ({ userId }) => {
+            console.log(`Trade confirmed by ${userId}.`);
+            confirmedCount += 1;
+            if (confirmedCount === 2) {
+                console.log("Both users have confirmed the trade");
+                io.emit("tradeCompleted");
+                confirmedCount = 0;
+            }
         });
 
         // Disconnection event
         socket.on("disconnect", () => {
-            console.log("Client disconnected: ", socket.id);
+            console.log("Client disconnected: ", clientId);
         });
     });
 };
