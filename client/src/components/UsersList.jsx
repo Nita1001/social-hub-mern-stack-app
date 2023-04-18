@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-
+import uniqid from "uniqid";
 import { getUsers } from "../api/userServices.js";
 import { LoginContext } from "../contexts/LoginContext.jsx";
 import { SelectedUserContext } from "../contexts/SelectedUserContext.jsx";
@@ -38,7 +38,7 @@ const UsersList = ({ type }) => {
                 {users.map((user) => (
                     <li
                         className="li-container"
-                        key={user._id}
+                        key={uniqid()}
                         onClick={() => handleClick(user)}
                     >
                         {user.username}
