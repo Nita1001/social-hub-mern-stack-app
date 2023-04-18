@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useMemo, useContext, useCallback } from 'react';
-import { socket } from "../events/socket.js";
 import { LoginContext } from '../contexts/LoginContext.jsx';
 import { SelectedUserContext } from '../contexts/SelectedUserContext.jsx';
+import { useSocket } from '../events/socket.js';
 
 import conversationReducer from "../reducers/conversationReducer.js";
 import { conversationActions } from '../constants/conversationActions.js';
@@ -13,6 +13,7 @@ import {
 import { getMessageById } from '../api/messageServices.js';
 
 const useConversation = () => {
+    const socket = useSocket();
     const { selectedUser } = useContext(SelectedUserContext);
     const { userId: currentUser } = useContext(LoginContext);
 
