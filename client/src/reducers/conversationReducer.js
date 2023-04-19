@@ -1,4 +1,4 @@
-import { conversationActions } from "../constants/conversationActions";
+import { conversationActions } from "../actions/conversationActions";
 
 const conversationReducer = (state, action) => {
     const { type, payload } = action;
