@@ -27,9 +27,9 @@ const ItemsInTradingBox = () => {
                     </div>
                 ))}
             </div>
+            <h4> Trading on Items </h4>
             {requestedItems?.length > 0 && (
-                <>
-                    <h4> Trading on Items </h4>
+                <div className="trading-items-container">
                     {requestedItems.map((item) => (
                         <div key={uniqid()} className="trading-item">
                             <h5>{item && item.title}</h5>
@@ -43,7 +43,7 @@ const ItemsInTradingBox = () => {
                             </button>
                         </div>
                     ))}
-                </>
+                </div>
             )}
         </>
     );
