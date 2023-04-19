@@ -87,9 +87,9 @@
 }
 
 /* Hiding the default scrollbar */
-/* .conversation-box::-webkit-scrollbar {
+.conversation-box::-webkit-scrollbar {
     display: none;
-} */
+}
 .conversation-box::-webkit-scrollbar {
     width: 0.2rem;
 }
