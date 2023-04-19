@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from "react";
 import usersReducer from "../reducers/usersReducer.js";
-import { selectedUserActions } from "../constants/selectedUserActions";
+import { selectedUserActions } from "../actions/selectedUserActions.js";
 
 const SelectedUserContext = createContext({
     selectedUser: {},

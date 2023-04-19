@@ -4,7 +4,7 @@ import { SelectedUserContext } from '../contexts/SelectedUserContext.jsx';
 import { useSocket } from '../events/socket.js';
 
 import conversationReducer from "../reducers/conversationReducer.js";
-import { conversationActions } from '../constants/conversationActions.js';
+import { conversationActions } from '../actions/conversationActions.js';
 import {
     createNewConversation,
     getUsersConversation,
