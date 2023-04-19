@@ -24,7 +24,7 @@
     justify-content: center;
     margin: 10px;
     padding: 10px;
-    border: 2px solid #ccc;
+    border: 2px solid #4d2626;
     width: 150px;
     height: 150px;
 }
@@ -60,9 +60,9 @@
 }
 
 .offer-container {
-    width: 60rem;
+    width: 100%;
     height: 20rem;
-    background-color: rgba(77, 112, 195, 0.245);
+    background-color: rgba(77, 112, 195, 0.147);
 }
 .offer-item {
     width: 60rem;

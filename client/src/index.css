@@ -29,6 +29,31 @@ body {
     flex-direction: column;
     min-width: 320px;
     min-height: 100vh;
+    background: url("./assets/decorative-elements.png") no-repeat center center
+        fixed;
+    background-color: white;
+    background-size: cover;
+}
+
+.messages-page {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 100vh;
+    background: url("./assets/realistic-glassmorphism.png") no-repeat center
+        center fixed;
+    background-size: cover;
+    background-position: 90px -180px;
+}
+
+.storage-page {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 100vh;
+    /* background: rgba(246, 246, 246, 0.936); */
 }
 
 h1 {
