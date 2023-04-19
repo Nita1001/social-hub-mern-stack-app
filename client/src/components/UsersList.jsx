@@ -32,8 +32,7 @@ const UsersList = ({ type }) => {
         console.log("user selected is", user);
     };
     return (
-        <div>
-            <h2>Friends</h2>
+        <div className="container">
             <ul className="ul-container">
                 {users.map((user) => (
                     <li
