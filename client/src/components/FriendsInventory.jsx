@@ -10,7 +10,9 @@ const FriendsInventory = () => {
 
     return (
         <>
-            <h4>{selectedUser.firstName}`s Inventory </h4>
+            <h4 className="selectedUser-h4">
+                {selectedUser.firstName}`s Inventory{" "}
+            </h4>
             {selectedUserInventory?.length > 0 ? (
                 <div className="trading-items-container">
                     {selectedUserInventory.map((items) => (
@@ -26,7 +28,7 @@ const FriendsInventory = () => {
                     ))}
                 </div>
             ) : (
-                <h5>
+                <h5 className="selectedUser-h5">
                     {selectedUser.firstName} is not trading his precious items
                 </h5>
             )}

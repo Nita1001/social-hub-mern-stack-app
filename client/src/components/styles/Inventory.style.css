@@ -118,3 +118,11 @@
     margin-right: 60rem;
     /* padding-bottom: 20rem; */
 }
+
+.selectedUser-h4 {
+    padding: 3rem;
+}
+
+.selectedUser-h5 {
+    padding: 3.2rem;
+}
