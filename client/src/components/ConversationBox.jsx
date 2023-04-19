@@ -5,6 +5,8 @@ import "./styles/conversation.style.css";
 import { DarkModeContext } from "../contexts/DarkModeContext";
 
 const ConversationBox = ({ filteredMessages, currentUser }) => {
+    const { isDarkMode } = useContext(DarkModeContext);
+
     const userData = JSON.parse(localStorage.getItem("userData")) || "";
     const selectedUserData =
         JSON.parse(localStorage.getItem("selectedUserData")) || "";
@@ -19,12 +21,6 @@ const ConversationBox = ({ filteredMessages, currentUser }) => {
     useEffect(() => {
         scrollToBottom();
     }, [filteredMessages]);
-
-    const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
-
-    const handleDarkMode = () => {
-        toggleDarkMode();
-    };
 
     return (
         <>
@@ -51,7 +47,6 @@ const ConversationBox = ({ filteredMessages, currentUser }) => {
                             )
                     )}
             </div>
-            <button onClick={handleDarkMode}>Dark Mode</button>
         </>
     );
 };
