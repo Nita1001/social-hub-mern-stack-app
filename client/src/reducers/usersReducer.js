@@ -1,4 +1,4 @@
-import { selectedUserActions } from '../constants/selectedUserActions'
+import { selectedUserActions } from '../actions/selectedUserActions';
 
 const usersReducer = (state, action) => {
     const { type, payload } = action;
