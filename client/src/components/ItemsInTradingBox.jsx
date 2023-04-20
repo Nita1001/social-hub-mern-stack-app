@@ -20,7 +20,18 @@ const ItemsInTradingBox = () => {
                 <div className="trading-items-container">
                     {selectedOfferItems?.map((item) => (
                         <div key={uniqid()} className="trading-item">
-                            <h5>{item?.title}</h5>
+                            <h6>{item && item.title}</h6>
+                            <img
+                                src={item && item.images[1]}
+                                alt={item && item.title}
+                                onMouseOver={(e) =>
+                                    (e.currentTarget.src = item.images[0])
+                                }
+                                onMouseOut={(e) =>
+                                    (e.currentTarget.src = item.images[1])
+                                }
+                            />
+                            <p>{item && item.description}</p>
                             <button
                                 onClick={() =>
                                     handleRemoveOfferingItem(item._id)
@@ -35,7 +46,7 @@ const ItemsInTradingBox = () => {
                     <div className="trading-items-container">
                         {requestedItems.map((item) => (
                             <div key={uniqid()} className="trading-item">
-                                <h5>{item && item.title}</h5>
+                                <h6>{item && item.title}</h6>
                                 <img
                                     src={item && item.images[1]}
                                     alt={item && item.title}
