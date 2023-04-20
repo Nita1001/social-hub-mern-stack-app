@@ -14,29 +14,16 @@ const ItemsInTradingBox = () => {
 
     return (
         <>
-            {selectedOfferItems.length > 0 && <h4>My Offering items</h4>}
-            <div className="trading-items-container">
-                {selectedOfferItems?.map((item) => (
-                    <div key={uniqid()} className="trading-item">
-                        <h5>{item?.title}</h5>
-                        <button
-                            onClick={() => handleRemoveOfferingItem(item._id)}
-                        >
-                            Remove
-                        </button>
-                    </div>
-                ))}
-            </div>
-            <h4> Trading on Items </h4>
-            {requestedItems?.length > 0 && (
+            <h4> Trading Box </h4>
+            {/* {selectedOfferItems.length > 0 && <h4>My Offering items</h4>} */}
+            <div className="trading-box">
                 <div className="trading-items-container">
-                    {requestedItems.map((item) => (
+                    {selectedOfferItems?.map((item) => (
                         <div key={uniqid()} className="trading-item">
-                            <h5>{item && item.title}</h5>
-                            <p>{item && item.description}</p>
+                            <h5>{item?.title}</h5>
                             <button
                                 onClick={() =>
-                                    handleRemoveRequestedItem(item._id)
+                                    handleRemoveOfferingItem(item._id)
                                 }
                             >
                                 Remove
@@ -44,7 +31,34 @@ const ItemsInTradingBox = () => {
                         </div>
                     ))}
                 </div>
-            )}
+                {requestedItems?.length > 0 && (
+                    <div className="trading-items-container">
+                        {requestedItems.map((item) => (
+                            <div key={uniqid()} className="trading-item">
+                                <h5>{item && item.title}</h5>
+                                <img
+                                    src={item && item.images[1]}
+                                    alt={item && item.title}
+                                    onMouseOver={(e) =>
+                                        (e.currentTarget.src = item.images[0])
+                                    }
+                                    onMouseOut={(e) =>
+                                        (e.currentTarget.src = item.images[1])
+                                    }
+                                />
+                                <p>{item && item.description}</p>
+                                <button
+                                    onClick={() =>
+                                        handleRemoveRequestedItem(item._id)
+                                    }
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </>
     );
 };
