@@ -16,10 +16,6 @@ dotenv.config({ path: './config/config.env' });
 // Serve static files from the client's build directory
 app.use("/", express.static("../client/dist"));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'));
-});
-
 // Parse request body
 app.use(express.json());
 
@@ -33,6 +29,11 @@ app.use('/api/inventories/items', require('./routes/items'));
 app.use('/api/conversations', require('./routes/conversations.js'));
 app.use('/api/conversations/messages', require('./routes/messages.js'));
 app.use('/api/trades', require('./routes/trades'));
+app.get('*', (req, res) => {
+    const indexPath = path.join(__dirname, '/client/dist/index.html');
+    console.log('indexPath:', indexPath);
+    res.sendFile(indexPath);
+});
 // Error handling middleware
 app.use(errorHandler);
 
