@@ -19,6 +19,8 @@
 .item,
 .favorite-item {
     background-color: white;
+    width: 10rem;
+    height: 12rem;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
@@ -88,26 +90,39 @@
 }
 
 .trading-item {
-    width: 8rem;
+    width: 10rem;
+    height: 12rem;
     margin-left: 1rem;
     margin-bottom: 20px;
-    overflow: hidden;
+    /* overflow: hidden; */
     border: 1px solid #ccc;
     border-radius: 1rem;
+    font-size: small;
+    background-color: white;
 }
-
-.trading-item h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
+.trading-item img,
+.item img {
+    width: 50%;
+    height: 50%;
+    object-fit: contain; /* control the display of the image */
+    transition: transform ease-in-out 0.8s;
 }
-
+.trading-item img:hover,
+.item img:hover {
+    transform: scale(3);
+}
+.trading-item h6,
+.trading-item p {
+    margin-top: 0.2rem;
+    margin-bottom: 4px;
+}
 .trading-item button {
-    background-color: #cc00c2;
     color: #fff;
     border: none;
     padding: 5px 10px;
     border-radius: 3rem;
     cursor: pointer;
+    /* background-color: #cc00c2; */
 }
 
 .trading-item button:hover {
@@ -115,7 +130,11 @@
 }
 
 .users-container {
-    margin-right: 60rem;
+    position: absolute;
+    top: 12rem;
+    left: 26rem;
+    margin-top: 20px;
+    /* margin-right: 60rem; */
     /* padding-bottom: 20rem; */
 }
 

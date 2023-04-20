@@ -7,6 +7,17 @@
     margin-top: 20px;
 }
 
+.trading-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    min-width: 40rem;
+    /* height: 20rem;
+    width: 80rem; */
+}
+
 .trading-box-container h2 {
     margin-bottom: 10px;
 }
