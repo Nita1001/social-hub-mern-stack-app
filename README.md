@@ -6,6 +6,10 @@ This is a MERN stack web application that allows users to manage their inventory
 
 - Vite is used to build the client application in this project.
 
+## Demo
+
+You can see a live demo of the app at https://socialhub.onrender.com/.
+
 ## Installation
 
 - To install the server dependencies, run the following command in the `server` directory:
