@@ -59,18 +59,12 @@ const useConversation = () => {
         return message;
     }, []);
 
-
     useEffect(() => {
-        // Removing existing event and registering a new one for new messages when a conversation is selected
-        if (selectedConversation) {
-            socket.off('message', handleMessage);
-            socket.on('message', handleMessage);
-        }
-        // Clean up the event listener when the component unmounts
+        socket.on("message", handleMessage);
         return () => {
-            socket.off('message', handleMessage);
+            socket.off("message", handleMessage);
         };
-    }, [selectedConversation, handleMessage, socket]);
+    }, [socket, handleMessage]);
 
     const fetchConversation = async () => {
         try {
@@ -92,9 +86,9 @@ const useConversation = () => {
                         type: conversationActions.SET_MESSAGES,
                         payload: allMessages,
                     });
-                    // // Set up socket event listener for new messages
-                    // socket.off('message', handleMessage); // remove existing event listener
-                    // socket.on('message', handleMessage); // add new event listener
+                    // Set up socket event listener for new messages
+                    socket.off('message', handleMessage); // remove existing event listener
+                    socket.on('message', handleMessage); // add new event listener
                 }
             } else {
                 const newConversation = await createNewConversation(
@@ -106,9 +100,9 @@ const useConversation = () => {
                     type: conversationActions.SET_CONVERSATIONS,
                     payload: newConversation,
                 });
-                // // Set up socket event listener for new messages
-                // socket.off('message', handleMessage); // remove existing event listener
-                // socket.on('message', handleMessage); // add new event listener
+                // Set up socket event listener for new messages
+                socket.off('message', handleMessage); // remove existing event listener
+                socket.on('message', handleMessage); // add new event listener
             }
         } catch (error) {
             console.error(error);
@@ -137,6 +131,7 @@ const useConversation = () => {
         };
         // Sending new message to server
         socket.emit("message", newMessage.message);
+
         // Adding the new message to messages array
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
