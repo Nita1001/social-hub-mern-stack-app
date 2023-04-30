@@ -124,12 +124,18 @@ const useConversation = () => {
         };
         // Sending new message to server
         socket.emit("message", newMessage.message);
-
-        // Adding the new message to messages array
-        conversationDispatch({
-            type: conversationActions.ADD_MESSAGE,
-            payload: newMessage,
+        // Listen for the new message from the server
+        socket.on("message", (message) => {
+            conversationDispatch({
+                type: conversationActions.ADD_MESSAGE,
+                payload: { message },
+            });
         });
+        // // Adding the new message to messages array
+        // conversationDispatch({
+        //     type: conversationActions.ADD_MESSAGE,
+        //     payload: newMessage,
+        // });
     };
 
     const filteredMessages = useMemo(() => {
