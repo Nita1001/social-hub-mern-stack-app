@@ -18,9 +18,8 @@ const init = (server) => {
 
     // Connection event
     io.on("connection", (socket) => {
-
+        console.log('New CC');
         const clientId = socket.handshake.query.clientId;
-
         console.log("Client connected: ", clientId);
         connectedUsers[clientId] = socket;
 
@@ -31,27 +30,29 @@ const init = (server) => {
             delete pendingOffers[clientId];
         }
 
+        // Handle joining the Conversation
+        socket.on("joinConversation", (conversationId) => {
+            socket.join(conversationId);
+            console.log(`Socket ${socket.id} joined 'room' ${conversationId}`);
+        });
+
+        // TODO Handle leaving the Conversation
+        socket.on("leave", (room) => {
+            socket.leave(room);
+            console.log(`Socket ${socket.id} left 'room' ${room}`);
+        });
+
         // Handle incoming message events
-        socket.on("message", async (message) => {
+        socket.on("message", async ({ conversationId, message }) => {
             console.log("New message received: ", message);
 
             // Create the message using the message controller
-            console.log('socket.js |server| Message', message);
+            console.log('socket.js | Message', message);
             const createdMessage = await createMessage(message);
             console.log('createdMessage', createdMessage);
-            // Send message to all connected clients
-            io.emit("message", createdMessage);
-        });
 
-        // Handle joining/leaving a room   
-        socket.on("join", (conversationId) => {
-            socket.join(conversationId);
-            console.log(`Socket ${socket.id} joined room ${conversationId}`);
-        });
-
-        socket.on("leave", (room) => {
-            socket.leave(room);
-            console.log(`Socket ${socket.id} left room ${room}`);
+            // Send message to the other connected clients in the room
+            io.to(conversationId).emit("message", createdMessage);
         });
 
         // Handle incoming trade offer events

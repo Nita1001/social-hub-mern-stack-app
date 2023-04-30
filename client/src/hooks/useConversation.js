@@ -37,7 +37,7 @@ const useConversation = () => {
                 type: conversationActions.SET_SELECTED_CONVERSATION,
                 payload: conversation
             });
-            socket.emit('joinRoom', conversation._id);
+            socket.emit('joinConversation', conversation._id);
         } else {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: 'error' });
         }
@@ -50,8 +50,8 @@ const useConversation = () => {
     }, []);
 
     const handleMessage = useCallback((message) => {
-        console.log("New message received:", message);
-        console.log("Socket connected:", socket.connected);
+        console.log("Socket connected", socket.connected);
+        console.log("New message received", message);
 
         if (!message) return;
         conversationDispatch({
@@ -62,12 +62,6 @@ const useConversation = () => {
         return message;
     }, []);
 
-    useEffect(() => {
-        socket.on("message", handleMessage);
-        return () => {
-            socket.off("message", handleMessage);
-        };
-    }, [socket, handleMessage]);
 
     const fetchConversation = async () => {
         try {
@@ -90,7 +84,7 @@ const useConversation = () => {
                         payload: allMessages,
                     });
                     // Set up socket event listener for new messages
-                    socket.off('message', handleMessage); // remove existing event listener
+                    socket.off('message', handleMessage); // remove event listener
                     socket.on('message', handleMessage); // add new event listener
                 }
             } else {
@@ -104,7 +98,7 @@ const useConversation = () => {
                     payload: newConversation,
                 });
                 // Set up socket event listener for new messages
-                socket.off('message', handleMessage); // remove existing event listener
+                socket.off('message', handleMessage); // remove event listener
                 socket.on('message', handleMessage); // add new event listener
             }
         } catch (error) {
@@ -120,9 +114,9 @@ const useConversation = () => {
 
     const sendMessage = async (message) => {
         if (!message.trim() || !selectedConversation) {
-            return; // Do nothing if message is empty or only whitespace
+            return;
         }
-        // new message object
+
         const newMessage = {
             message: {
                 conversationId: selectedConversation._id,
@@ -132,16 +126,18 @@ const useConversation = () => {
                 updatedAt: new Date().toISOString()
             }
         };
-        // Sending new message to server
-        socket.emit("message", newMessage.message);
+        // Send new message to server
+        // socket.emit("message", newMessage.message);
+        socket.emit("message", {
+            conversationId: selectedConversation._id,
+            message: newMessage
+        });
 
-        // Adding the new message to messages array
+        // Add new message to messages array
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
             payload: newMessage,
         });
-        // Emit the message to all sockets
-        io.emit("message", newMessage.message);
     };
 
     const filteredMessages = useMemo(() => {
@@ -150,7 +146,7 @@ const useConversation = () => {
         }
         return messages || [];
     }, [selectedUser._id, selectedConversation, messages]);
-    console.log(filteredMessages);
+
     return {
         conversations,
         selectedConversation,
@@ -164,3 +160,12 @@ const useConversation = () => {
 };
 
 export default useConversation
+
+
+
+    // useEffect(() => {
+    //     socket.on("message", handleMessage);
+    //     return () => {
+    //         socket.off("message", handleMessage);
+    //     };
+    // }, [socket, handleMessage]);
