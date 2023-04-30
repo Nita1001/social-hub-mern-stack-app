@@ -50,6 +50,9 @@ const useConversation = () => {
     }, []);
 
     const handleMessage = useCallback((message) => {
+        console.log("New message received:", message);
+        console.log("Socket connected:", socket.connected);
+
         if (!message) return;
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
@@ -137,6 +140,8 @@ const useConversation = () => {
             type: conversationActions.ADD_MESSAGE,
             payload: newMessage,
         });
+        // Emit the message to all sockets
+        io.emit("message", newMessage.message);
     };
 
     const filteredMessages = useMemo(() => {
@@ -145,7 +150,7 @@ const useConversation = () => {
         }
         return messages || [];
     }, [selectedUser._id, selectedConversation, messages]);
-
+    console.log(filteredMessages);
     return {
         conversations,
         selectedConversation,
