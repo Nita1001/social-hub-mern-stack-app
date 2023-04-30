@@ -3,9 +3,10 @@ const User = require('../models/userSchema.js');
 const updateMessages = require('../helpers/updateMessages.js');
 
 exports.createMessage = async (body) => {
-    const { conversationId, from, to, content } = body;
+    const { conversationId, from, to, content } = body.message;
 
     if (!conversationId || !from || !to || !content) {
+        console.log('body', body);
         throw new Error('Missing required fields');
     }
 
