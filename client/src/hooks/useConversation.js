@@ -128,7 +128,7 @@ const useConversation = () => {
         socket.on("message", (message) => {
             conversationDispatch({
                 type: conversationActions.ADD_MESSAGE,
-                payload: { message },
+                payload: message,
             });
         });
         // // Adding the new message to messages array
