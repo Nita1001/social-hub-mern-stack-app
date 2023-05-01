@@ -64,52 +64,63 @@ const useConversation = () => {
     }, []);
 
 
-    const fetchConversation = async () => {
-        try {
-            const existingConversation = await getUsersConversation(
-                currentUser,
-                selectedUser._id
-            );
+    useEffect(() => {
+        if (!selectedUser._id) return;
 
-            if (existingConversation) {
-                setConversationAndJoinRoom(existingConversation);
-                const response = await getConversation(existingConversation._id);
-
-                if (response) {
-                    const messages = response.messages;
-                    const allMessages = await getAllMessagesByIds(messages);
-
-                    conversationDispatch({
-                        type: conversationActions.SET_MESSAGES,
-                        payload: allMessages,
-                    });
-                    // Set up socket event listener for new messages
-                    socket.off('message', handleMessage); // remove event listener
-                    socket.on('message', handleMessage); // add new event listener
-                }
-            } else {
-                const newConversation = await createNewConversation(
+        const fetchConversation = async () => {
+            try {
+                const existingConversation = await getUsersConversation(
                     currentUser,
                     selectedUser._id
                 );
-                setConversationAndJoinRoom(newConversation);
-                conversationDispatch({
-                    type: conversationActions.SET_CONVERSATIONS,
-                    payload: newConversation,
-                });
-                // Set up socket event listener for new messages
-                socket.off('message', handleMessage); // remove event listener
-                socket.on('message', handleMessage); // add new event listener
-            }
-        } catch (error) {
-            console.error(error);
-            conversationDispatch({ type: conversationActions.SET_ERROR, payload: error });
-        }
-    };
 
-    useEffect(() => {
-        if (!selectedUser._id) return;
+                if (existingConversation) {
+                    setConversationAndJoinRoom(existingConversation);
+                    const response = await getConversation(existingConversation._id);
+
+                    if (response) {
+                        const messages = response.messages;
+                        const allMessages = await getAllMessagesByIds(messages);
+
+                        conversationDispatch({
+                            type: conversationActions.SET_MESSAGES,
+                            payload: allMessages,
+                        });
+                        // // Set up socket event listener for new messages
+                        // socket.off('message', handleMessage); // remove event listener
+                        // socket.on('message', handleMessage); // add new event listener
+                    }
+                } else {
+                    const newConversation = await createNewConversation(
+                        currentUser,
+                        selectedUser._id
+                    );
+                    setConversationAndJoinRoom(newConversation);
+                    conversationDispatch({
+                        type: conversationActions.SET_CONVERSATIONS,
+                        payload: newConversation,
+                    });
+                    // // Set up socket event listener for new messages
+                    // socket.off('message', handleMessage); // remove event listener
+                    // socket.on('message', handleMessage); // add new event listener
+                }
+            } catch (error) {
+                console.error(error);
+                conversationDispatch({ type: conversationActions.SET_ERROR, payload: error });
+            }
+        };
+
         fetchConversation();
+
+        // Set up socket event listener for new messages
+        socket.on('message', handleMessage);
+
+        // Remove event listener on cleanup
+        return () => {
+            socket.off('message', handleMessage);
+        };
+
+
     }, [selectedUser._id, currentUser]);
 
     const sendMessage = async (message) => {
