@@ -52,8 +52,8 @@ const init = (server) => {
             console.log('createdMessage', createdMessage);
 
             // Send message to the other connected clients in the room
-            console.log('content !!!', message.content);
-            io.to(conversationId).emit("message", message.content);
+            console.log('content !!!', createdMessage.content);
+            io.to(conversationId).emit("message", createdMessage.content);
         });
 
         // Handle incoming trade offer events
