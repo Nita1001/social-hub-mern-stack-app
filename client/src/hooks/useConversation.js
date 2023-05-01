@@ -53,7 +53,6 @@ const useConversation = () => {
     const handleMessage = useCallback((message) => {
         console.log("Socket connected", socket.connected);
         console.log("New message received", message);
-
         if (!message) return;
         conversationDispatch({
             type: conversationActions.ADD_MESSAGE,
