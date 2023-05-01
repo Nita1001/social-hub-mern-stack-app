@@ -44,16 +44,13 @@ const init = (server) => {
 
         // Handle incoming message events
         socket.on("message", async ({ conversationId, message }) => {
-            console.log("New message received");
             console.log('conversationId', conversationId);
             // Create the message using the message controller
             console.log('socket.js | Message', message);
             const createdMessage = await createMessage(message);
             console.log('createdMessage', createdMessage);
-
             // Send message to the other connected clients in the room
-            console.log('content !!!', createdMessage.content);
-            io.to(conversationId).emit("message", createdMessage.content);
+            io.to(conversationId).emit("message", createdMessage);
         });
 
         // Handle incoming trade offer events
