@@ -44,8 +44,8 @@ const init = (server) => {
 
         // Handle incoming message events
         socket.on("message", async ({ conversationId, message }) => {
-            console.log("New message received: ", message);
-
+            console.log("New message received");
+            console.log('conversationId', conversationId);
             // Create the message using the message controller
             console.log('socket.js | Message', message);
             const createdMessage = await createMessage(message);

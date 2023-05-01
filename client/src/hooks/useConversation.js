@@ -37,6 +37,7 @@ const useConversation = () => {
                 type: conversationActions.SET_SELECTED_CONVERSATION,
                 payload: conversation
             });
+            console.log('existingConversation', existingConversation)
             socket.emit('joinConversation', conversation._id);
         } else {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: 'error' });
@@ -71,7 +72,6 @@ const useConversation = () => {
             );
 
             if (existingConversation) {
-
                 setConversationAndJoinRoom(existingConversation);
                 const response = await getConversation(existingConversation._id);
 
