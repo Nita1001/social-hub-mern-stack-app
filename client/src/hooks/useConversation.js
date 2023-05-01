@@ -37,7 +37,7 @@ const useConversation = () => {
                 type: conversationActions.SET_SELECTED_CONVERSATION,
                 payload: conversation
             });
-            console.log('existingConversation', existingConversation)
+            console.log('existingConversation', conversation)
             socket.emit('joinConversation', conversation._id);
         } else {
             conversationDispatch({ type: conversationActions.SET_ERROR, payload: 'error' });
