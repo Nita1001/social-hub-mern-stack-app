@@ -58,14 +58,8 @@ const useConversation = () => {
             type: conversationActions.ADD_MESSAGE,
             payload: message
         });
-        conversationDispatch({
-            type: conversationActions.ADD_FILTERED_MESSAGE,
-            payload: {
-                message: message,
-                userId: currentUser
-            }
-        });
-        // return message;
+
+        return message;
     }, []);
 
 
