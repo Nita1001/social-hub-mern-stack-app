@@ -32,7 +32,7 @@ const Conversation = () => {
         <div className="conversation-container">
             {selectedUser ? (
                 <ConversationBox
-                    filteredMessages={filteredMessages}
+                    filteredMessages={[...filteredMessages]}
                     currentUser={currentUser}
                 />
             ) : (
